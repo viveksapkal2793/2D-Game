@@ -28,16 +28,20 @@ class Game:
     def __init__(self, height, width):
         self.height = height
         self.width = width
-        self.screen = 0
+        self.screen = -1
         self.camera = Camera(height, width)
         self.shaders = [Shader(object_shader['vertex_shader'], object_shader['fragment_shader'])]
         self.objects = []
         self.maps = [self.create_jungle_map(), self.create_river_map(), self.create_space_map()]
         self.current_map = 0
+        # self.player = Object(self.shaders[0], playerProps)
+        self.player_on_rock = None
+        self.jump_charge_time = 0.0
 
     def create_space_map(self):
         space = Object(self.shaders[0], spaceProps)
         player = Object(self.shaders[0], playerProps)
+        player.properties['position'] = np.array([0, -450, 0], dtype=np.float32)
         objs =  [space, player]
         stone_objs = []
 
@@ -51,6 +55,7 @@ class Game:
 
             stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
             stone_obj = Object(self.shaders[0], {
+                'name': 'stone',
                 'vertices': np.array(stone_verts, dtype=np.float32),
                 'indices': np.array(stone_inds, dtype=np.uint32),
                 'position': pos,
@@ -70,6 +75,7 @@ class Game:
                     color=[1.0, 1.0, 0.0]
                 )
                 key_obj = Object(self.shaders[0], {
+                    'name': 'key',
                     'vertices': np.array(key_verts, dtype=np.float32),
                     'indices': np.array(key_inds, dtype=np.uint32),
                     'position': s.properties['position'].copy() + np.array([0, 0, 1], dtype=np.float32),
@@ -87,6 +93,7 @@ class Game:
     def create_jungle_map(self):
         jungle = Object(self.shaders[0], jungleProps)
         player = Object(self.shaders[0], playerProps)
+        player.properties['position'] = np.array([0, -450, 0], dtype=np.float32)
         objs =  [jungle, player]
         stone_objs = []
 
@@ -100,6 +107,7 @@ class Game:
 
             stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
             stone_obj = Object(self.shaders[0], {
+                'name': 'stone',
                 'vertices': np.array(stone_verts, dtype=np.float32),
                 'indices': np.array(stone_inds, dtype=np.uint32),
                 'position': pos,
@@ -119,6 +127,7 @@ class Game:
                     color=[1.0, 1.0, 0.0]
                 )
                 key_obj = Object(self.shaders[0], {
+                    'name': 'key',
                     'vertices': np.array(key_verts, dtype=np.float32),
                     'indices': np.array(key_inds, dtype=np.uint32),
                     'position': s.properties['position'].copy() + np.array([0, 0, 1], dtype=np.float32),
@@ -136,6 +145,7 @@ class Game:
     def create_river_map(self):
         river = Object(self.shaders[0], riverProps)
         player = Object(self.shaders[0], playerProps)
+        player.properties['position'] = np.array([0, -450, 0], dtype=np.float32)
         objs =  [river, player]
         stone_objs = []
 
@@ -149,6 +159,7 @@ class Game:
 
             stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
             stone_obj = Object(self.shaders[0], {
+                'name': 'stone',
                 'vertices': np.array(stone_verts, dtype=np.float32),
                 'indices': np.array(stone_inds, dtype=np.uint32),
                 'position': pos,
@@ -168,6 +179,7 @@ class Game:
                     color=[1.0, 1.0, 0.0]
                 )
                 key_obj = Object(self.shaders[0], {
+                    'name': 'key',
                     'vertices': np.array(key_verts, dtype=np.float32),
                     'indices': np.array(key_inds, dtype=np.uint32),
                     'position': s.properties['position'].copy() + np.array([0, 0, 1], dtype=np.float32),
@@ -183,14 +195,17 @@ class Game:
         return objs
 
     def InitScreen(self):
-        self.objects = self.maps[self.current_map]
+        # self.objects = self.maps[self.current_map]
         
-        # if self.screen == 0:
-        #     self.objects = self.maps[self.current_map]
-        # if self.screen == 1:
-        #     pass
-        # if self.screen == 2:
-        #     pass
+        if self.screen == 0:
+            self.current_map = 0
+            self.objects = self.maps[0]
+        if self.screen == 1:
+            self.current_map = 1
+            self.objects = self.maps[1]
+        if self.screen == 2:
+            self.current_map = 2
+            self.objects = self.maps[2]
 
     def ProcessFrame(self, inputs, time):
         if self.screen == -1:
@@ -205,6 +220,12 @@ class Game:
             self.DrawText()
             self.UpdateScene(inputs, time)
             self.DrawScene()
+            # self.show_switch_map_button()
+        if self.screen == 2:
+            self.DrawText()
+            self.UpdateScene(inputs, time)
+            self.DrawScene()
+            # self.show_switch_map_button()
 
     def DrawText(self):
         if self.screen == 0:
@@ -215,9 +236,31 @@ class Game:
            pass
 
     def UpdateScene(self, inputs, time):
+        # Move the player with WASD
+        delta = time['deltaTime']
+        speed = 100.0  # Adjust as needed
+        for obj in self.objects:
+            # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
+            if obj is not None and obj.properties['name'] == 'player':
+                if 'W' in inputs:
+                    obj.properties['position'][1] += speed * delta
+                if 'S' in inputs:
+                    obj.properties['position'][1] -= speed * delta
+                if 'A' in inputs:
+                    obj.properties['position'][0] -= speed * delta
+                if 'D' in inputs:
+                    obj.properties['position'][0] += speed * delta
+
+            # Clamp the player's position to avoid going out of screen bounds
+            x, y, z = obj.properties['position']
+            x = max(-470.0, min(470.0, x))
+            y = max(-470.0, min(470.0, y))
+            obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
+
+
         # Move stones if they have a 'speed' property
         for obj in self.objects:
-            if 'speed' in obj.properties:
+            if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
                 # Move from top to bottom (or vice versa)
                 # print(time)
                 obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
@@ -225,13 +268,69 @@ class Game:
                 if obj.properties['position'][1] < -360 or obj.properties['position'][1] > 360:
                     obj.properties['speed'] = -1 * obj.properties['speed']
 
+
         if self.screen == 0:
-            pass
+            # Example jump logic
+            jump_key = 'SPACE'  # or another key
+            min_jump = 50.0
+            max_jump = 300.0
+
+            self.player_on_rock = None
+            player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
+            if player_obj:
+                for rock in (o for o in self.objects if o.properties['name'] == 'stone'):
+                    dist = np.linalg.norm(player_obj.properties['position'] - rock.properties['position'])
+                    if dist < rock.properties['radius']:
+                        self.player_on_rock = rock
+                        break
+
+            # If on rock, move player along with rock
+            if self.player_on_rock is not None and player_obj:
+                # The rock moves downward => replicate the same shift
+                rock = self.player_on_rock
+                player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+
+            # Accumulate jump charge if jump key is pressed
+            if jump_key in inputs:
+                self.jump_charge_time += delta
+                self.jump_charge_time = min(self.jump_charge_time, 7.0)  # clamp max charge time
+            # On jump key release, perform jump
+            else:
+                if self.jump_charge_time > 0.0:
+                    # print(f"Jumping with charge time: {self.jump_charge_time}")
+                    distance_factor = self.jump_charge_time * 50.0
+                    jump_dist = max(min_jump, min(max_jump, distance_factor))
+                    # Use last movement direction or a chosen direction
+                    dx = 0.0
+                    dy = 0.0
+                    if 'W' in inputs: dy += 1.0
+                    if 'S' in inputs: dy -= 1.0
+                    if 'A' in inputs: dx -= 1.0
+                    if 'D' in inputs: dx += 1.0
+                    # Normalize direction
+                    length = (dx**2 + dy**2)**0.5
+                    # print(f"Jump direction: {dx}, {dy}")
+                    if length > 0.0:
+                        dx /= length
+                        dy /= length
+                    # Apply jump
+                    # print(f"Jumping with distance: {jump_dist}")
+                    # print(f'self.player.properties["position"]: {player_obj.properties["position"]}')
+                    if player_obj:
+                        player_obj.properties['position'][0] += dx * jump_dist
+                        player_obj.properties['position'][1] += dy * jump_dist
+                    # print(f'self.player.properties["position"]: {player_obj.properties["position"]}')
+
+                self.jump_charge_time = 0.0
+
+
         if self.screen == 1:
-          pass
+            pass
+        if self.screen == 2:
+            pass
             
     def DrawScene(self):
-        if self.screen == 1:
+        if self.screen in (0, 1, 2):
             for shader in self.shaders:
                 self.camera.Update(shader)
  
@@ -240,8 +339,10 @@ class Game:
             
     def switch_map(self):
         self.current_map += 1
-        if self.current_map >= len(self.maps):
+        self.screen += 1
+        if self.current_map >= len(self.maps) or self.screen >= len(self.maps):
             self.current_map = 0  # Loop back to the first map or handle game completion
+            self.screen = 0
         self.InitScreen()
         
     def show_switch_map_button(self):

@@ -96,6 +96,8 @@ def CreateBackground():
 
 playerVerts, playerInds = CreatePlayer()
 playerProps = {
+    'name': 'player',
+
     'vertices' : np.array(playerVerts, dtype = np.float32),
     
     'indices' : np.array(playerInds, dtype = np.uint32),
@@ -113,6 +115,8 @@ playerProps = {
 
 backgroundVerts, backgroundInds = CreateBackground()
 backgroundProps = {
+    'name': 'background',
+
     'vertices' : np.array(backgroundVerts, dtype = np.float32),
     
     'indices' : np.array(backgroundInds, dtype = np.uint32),
@@ -235,6 +239,7 @@ def CreateKeyIcon(radius=5, color=[1.0, 1.0, 0.0], points=12):
 # Example properties for biomes
 spaceVerts, spaceInds = CreateSpaceBiome()
 spaceProps = {
+    'name': 'spacemap',
     'vertices': np.array(spaceVerts, dtype=np.float32),
     'indices': np.array(spaceInds, dtype=np.uint32),
     'position': np.array([0, 0, 0], dtype=np.float32),
@@ -244,6 +249,7 @@ spaceProps = {
 
 jungleVerts, jungleInds = CreateJungleBiome()
 jungleProps = {
+    'name': 'junglemap',
     'vertices': np.array(jungleVerts, dtype=np.float32),
     'indices': np.array(jungleInds, dtype=np.uint32),
     'position': np.array([0, 0, 0], dtype=np.float32),
@@ -253,6 +259,7 @@ jungleProps = {
 
 riverVerts, riverInds = CreateRiverBiome()
 riverProps = {
+    'name': 'rivermap',
     'vertices': np.array(riverVerts, dtype=np.float32),
     'indices': np.array(riverInds, dtype=np.uint32),
     'position': np.array([0, 0, 0], dtype=np.float32),

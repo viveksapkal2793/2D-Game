@@ -65,7 +65,7 @@ class App:
     def start_new_game(self):
         self.show_main_menu = False
         self.game = Game(self.window.windowHeight, self.window.windowWidth)
-        self.game.screen = 1
+        self.game.screen = 0
         self.game.InitScreen()
 
     def load_game(self):
