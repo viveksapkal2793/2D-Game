@@ -31,9 +31,9 @@ class VAO:
         glBindVertexArray(self.vao)
         vbo.Use()
         glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, ctypes.c_uint(6 * ctypes.sizeof(ctypes.c_float)), ctypes.c_void_p(0))
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * ctypes.sizeof(ctypes.c_float), ctypes.c_void_p(0))
         glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, ctypes.c_uint(6 * ctypes.sizeof(ctypes.c_float)), ctypes.c_void_p(3 * ctypes.sizeof(ctypes.c_float)))
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * ctypes.sizeof(ctypes.c_float), ctypes.c_void_p(3 * ctypes.sizeof(ctypes.c_float)))
     def Use(self):
         glBindVertexArray(self.vao)
     def Delete(self):

@@ -127,3 +127,119 @@ backgroundProps = {
 
     'river_banks': [-400.0, 400.0]
 }
+
+def CreateSpaceBiome():
+    spaceColour = [0.1,0.1,0.1]
+    planetColour = [0.5,0.3,0.7]
+    # Define vertices and indices for forest biome
+    vertices = [
+        # Define vertices for trees, ground, etc.
+        500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        -500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        -500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+
+        500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        -500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        -500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+
+        500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
+        500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
+        -500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
+        -500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
+        
+    ]
+    indices = [
+        # Define indices for trees, ground, etc.
+        0,1,2, 0,3,2,
+        8,9,10, 8,11,10,
+        4,5,6, 4,7,6
+    ]
+    return vertices, indices
+
+def CreateJungleBiome():
+    cliffColour = [0.5,0.5,0]
+    grasslandColour = [0,1,0]
+    # Define vertices and indices for desert biome
+    vertices = [
+        # Define vertices for cacti, sand, etc.
+        500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        -500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        -500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+
+        500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        -500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        -500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+
+        500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
+        500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
+        -500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
+        -500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
+    ]
+    indices = [
+        # Define indices for cacti, sand, etc.
+        0,1,2, 0,3,2,
+        8,9,10, 8,11,10,
+        4,5,6, 4,7,6
+    ]
+    return vertices, indices
+
+def CreateRiverBiome():
+    landColour = [0,1,0]
+    riverColour = [0,0,1]
+    # Define vertices and indices for river biome
+    vertices = [
+        # Define vertices for water, rocks, etc.
+        500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2],
+        500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2],
+        -500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2],
+        -500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2],
+
+        500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2],
+        500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2],
+        -500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2],
+        -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2],
+
+        500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
+        500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
+        -500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
+        -500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
+    ]
+    indices = [
+        # Define indices for water, rocks, etc.
+        0,1,2, 0,3,2,
+        8,9,10, 8,11,10,
+        4,5,6, 4,7,6
+    ]
+    return vertices, indices
+
+# Example properties for biomes
+spaceVerts, spaceInds = CreateSpaceBiome()
+spaceProps = {
+    'vertices': np.array(spaceVerts, dtype=np.float32),
+    'indices': np.array(spaceInds, dtype=np.uint32),
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+}
+
+jungleVerts, jungleInds = CreateJungleBiome()
+jungleProps = {
+    'vertices': np.array(jungleVerts, dtype=np.float32),
+    'indices': np.array(jungleInds, dtype=np.uint32),
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+}
+
+riverVerts, riverInds = CreateRiverBiome()
+riverProps = {
+    'vertices': np.array(riverVerts, dtype=np.float32),
+    'indices': np.array(riverInds, dtype=np.uint32),
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+}
