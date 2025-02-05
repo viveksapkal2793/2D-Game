@@ -216,6 +216,22 @@ def CreateRiverBiome():
     ]
     return vertices, indices
 
+def CreateStone(radius=15, color=[0.7, 0.7, 0.7], center=[0.0, 0.0, 0.0], points=20):
+    
+    # center = [np.random.uniform(-380, 380), np.random.uniform(-380, 380), 0]
+    # Create a circular stone mesh using your existing CreateCircle function
+    verts, inds = CreateCircle(center, radius, color, points)
+    return verts, inds
+
+def CreateKeyIcon(radius=5, color=[1.0, 1.0, 0.0], points=12):
+    """
+    Creates a small circular 'key' graphic.
+    Reuse your CreateCircle function, or define your own small circle here.
+    """
+    verts, inds = CreateCircle([0.0, 0.0, 0.0], radius, color, points)
+    return verts, inds
+
+
 # Example properties for biomes
 spaceVerts, spaceInds = CreateSpaceBiome()
 spaceProps = {
