@@ -38,6 +38,14 @@ class Game:
         self.player_on_rock = None
         self.jump_charge_time = 0.0
 
+        # Store hold times for W, A, S, D in a dictionary
+        self.keyHoldTimes = {
+            'W': 0.0,
+            'A': 0.0,
+            'S': 0.0,
+            'D': 0.0
+        }
+
     def create_space_map(self):
         space = Object(self.shaders[0], spaceProps)
         player = Object(self.shaders[0], playerProps)
@@ -82,7 +90,8 @@ class Game:
                     'rotation_z': 0.0,
                     'scale': np.array([1, 1, 1], dtype=np.float32),
                     'speed': s.properties['speed'],
-                    'has_key': True  # custom flag to indicate it's a key
+                    'has_key': True,  # custom flag to indicate it's a key
+                    'attached_to_player': False
                 })
                 stone_objs.append(key_obj)
 
@@ -134,7 +143,8 @@ class Game:
                     'rotation_z': 0.0,
                     'scale': np.array([1, 1, 1], dtype=np.float32),
                     'speed': s.properties['speed'],
-                    'has_key': True  # custom flag to indicate it's a key
+                    'has_key': True,  # custom flag to indicate it's a key
+                    'attached_to_player': False
                 })
                 stone_objs.append(key_obj)
 
@@ -186,7 +196,8 @@ class Game:
                     'rotation_z': 0.0,
                     'scale': np.array([1, 1, 1], dtype=np.float32),
                     'speed': s.properties['speed'],
-                    'has_key': True  # custom flag to indicate it's a key
+                    'has_key': True, # custom flag to indicate it's a key
+                    'attached_to_player': False
                 })
                 stone_objs.append(key_obj)
 
@@ -211,6 +222,15 @@ class Game:
         if self.screen == -1:
             self.screen = 0
             self.InitScreen()
+
+        # Update hold times for WASD
+        delta = time['deltaTime']
+        for key in ['W', 'A', 'S', 'D']:
+            if key in inputs:  # key is pressed
+                self.keyHoldTimes[key] += delta
+            else:
+                self.keyHoldTimes[key] = 0.0
+
         if self.screen == 0:
             self.DrawText()
             self.UpdateScene(inputs, time)
@@ -239,6 +259,7 @@ class Game:
         # Move the player with WASD
         delta = time['deltaTime']
         speed = 100.0  # Adjust as needed
+
         for obj in self.objects:
             # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
             if obj is not None and obj.properties['name'] == 'player':
@@ -289,6 +310,21 @@ class Game:
                 # The rock moves downward => replicate the same shift
                 rock = self.player_on_rock
                 player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+                
+                # Check if there's a key on this same rock
+                for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
+                    dist_key_rock = np.linalg.norm(key_obj.properties['position'] - rock.properties['position'])
+                    if dist_key_rock < rock.properties['radius']:
+                        # Attach key to player
+                        key_obj.properties['attached_to_player'] = True
+
+            # If a key is attached to the player, sync its position
+            if player_obj:
+                x_pos = -40
+                for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
+                    if key_obj.properties.get('attached_to_player'):
+                        x_pos += 20
+                        key_obj.properties['position'] = player_obj.properties['position'] + np.array([x_pos, 7, 2], dtype=np.float32)
 
             # Accumulate jump charge if jump key is pressed
             if jump_key in inputs:
@@ -298,15 +334,21 @@ class Game:
             else:
                 if self.jump_charge_time > 0.0:
                     # print(f"Jumping with charge time: {self.jump_charge_time}")
-                    distance_factor = self.jump_charge_time * 50.0
+                    distance_factor = self.jump_charge_time * 200.0
                     jump_dist = max(min_jump, min(max_jump, distance_factor))
                     # Use last movement direction or a chosen direction
                     dx = 0.0
                     dy = 0.0
-                    if 'W' in inputs: dy += 1.0
-                    if 'S' in inputs: dy -= 1.0
-                    if 'A' in inputs: dx -= 1.0
-                    if 'D' in inputs: dx += 1.0
+                    # if 'W' in inputs: dy += 1.0
+                    # if 'S' in inputs: dy -= 1.0
+                    # if 'A' in inputs: dx -= 1.0
+                    # if 'D' in inputs: dx += 1.0
+                    
+                    # Use hold times to define direction
+                    dy += self.keyHoldTimes['W']
+                    dy -= self.keyHoldTimes['S']
+                    dx += self.keyHoldTimes['D']
+                    dx -= self.keyHoldTimes['A']
                     # Normalize direction
                     length = (dx**2 + dy**2)**0.5
                     # print(f"Jump direction: {dx}, {dy}")
