@@ -3,7 +3,7 @@ import numpy as np
 import random
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, backgroundProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon
+from assets.objects.objects import playerProps, backgroundProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreateHeartIcon
 
 def random_nonoverlapping_position(existing_objs, new_radius, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -37,6 +37,8 @@ class Game:
         # self.player = Object(self.shaders[0], playerProps)
         self.player_on_rock = None
         self.jump_charge_time = 0.0
+        self.health = 100
+        self.lives = 3
 
         # Store hold times for W, A, S, D in a dictionary
         self.keyHoldTimes = {
@@ -46,12 +48,37 @@ class Game:
             'D': 0.0
         }
 
+    def CreateDoorObject(self, name: str, position: np.ndarray, radius: float=40.0):
+        """Creates a simple rectangular or circular 'door' object."""
+        # If you have a custom function to create geometry, use it here
+        # For simplicity, let's re-use a circle from CreateStone
+        
+        verts, inds = CreateStone(radius=radius, color=[0.7, 0.2, 0.2])
+        return Object(self.shaders[0], {
+            'name': name,
+            'vertices': np.array(verts, dtype=np.float32),
+            'indices': np.array(inds, dtype=np.uint32),
+            'position': position,
+            'rotation_z': 0.0,
+            'scale': np.array([1, 1, 1], dtype=np.float32),
+            'speed': 0.0,               # Doors are stationary
+            'radius': radius,           # For distance checks
+            'attached_to_player': False # Not used, but included for consistency
+        })
+
     def create_space_map(self):
         space = Object(self.shaders[0], spaceProps)
         player = Object(self.shaders[0], playerProps)
         player.properties['position'] = np.array([0, -450, 0], dtype=np.float32)
         objs =  [space, player]
         stone_objs = []
+
+        # Add bottom-left entry "door"
+        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30)
+        objs.append(entry_door)
+        # Add top-right exit "door"
+        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
+        objs.append(exit_door)
 
         # Add random non-overlapping stones
         for _ in range(8):
@@ -106,6 +133,13 @@ class Game:
         objs =  [jungle, player]
         stone_objs = []
 
+        # Add bottom-left entry "door"
+        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30)
+        objs.append(entry_door)
+        # Add top-right exit "door"
+        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
+        objs.append(exit_door)
+
         # Add random non-overlapping stones
         for _ in range(8):
             r = 40
@@ -158,6 +192,13 @@ class Game:
         player.properties['position'] = np.array([0, -450, 0], dtype=np.float32)
         objs =  [river, player]
         stone_objs = []
+
+        # Add bottom-left entry "door"
+        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30)
+        objs.append(entry_door)
+        # Add top-right exit "door"
+        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
+        objs.append(exit_door)
 
         # Add random non-overlapping stones
         for _ in range(8):
@@ -255,6 +296,83 @@ class Game:
         if self.screen == 2:
            pass
 
+    def DrawHUD(self):
+        """
+        Updated HUD that spans full screen width at the top with a bordered health bar and heart icons.
+        """
+
+        # Use the full viewport width for the bar. For a 1000 px wide screen (approx) from -500 to +500.
+        screen_left = -500.0
+        screen_right = 500.0
+        bar_height = 20.0  # total height for the bar (including border)
+        bar_top = 500.0    # near the top
+        border_thickness = 2.0
+
+        # Calculate health ratio and color (red at 0 health, green at full health)
+        health_ratio = max(0, min(1, self.health / 100.0))
+        bar_r = 1.0 - health_ratio
+        bar_g = health_ratio
+        bar_color = [bar_r, bar_g, 0.0]
+
+        # Draw the outer border (white or gray)
+        bar_bg_props = {
+            'name': 'health_bar_border',
+            'vertices': np.array([
+                screen_left, bar_top, 0.0, 0.0, 0.0, 0.0,
+                screen_right, bar_top, 0.0, 0.0, 0.0, 0.0,
+                screen_right, bar_top - bar_height, 0.0, 0.0, 0.0, 0.0,
+                screen_left, bar_top - bar_height, 0.0, 0.0, 0.0, 0.0
+            ], dtype=np.float32),
+            'indices': np.array([0,1,2, 0,3,2], dtype=np.uint32),
+            'position': np.array([0,0,0], dtype=np.float32),
+            'rotation_z': 0.0,
+            'scale': np.array([1,1,1], dtype=np.float32)
+        }
+        Object(self.shaders[0], bar_bg_props).Draw()
+
+        # Draw the filled part (inner rectangle)
+        fill_left = screen_left + border_thickness
+        fill_right = fill_left + ((screen_right - 170) - screen_left - 2*border_thickness)*health_ratio
+        fill_top = bar_top - border_thickness
+        fill_bottom = bar_top - bar_height + border_thickness
+
+        bar_fill_props = {
+            'name': 'health_bar_fill',
+            'vertices': np.array([
+                fill_left, fill_top, 1.0, bar_color[0], bar_color[1], bar_color[2],
+                fill_right, fill_top, 1.0, bar_color[0], bar_color[1], bar_color[2],
+                fill_right, fill_bottom, 1.0, bar_color[0], bar_color[1], bar_color[2],
+                fill_left, fill_bottom, 1.0, bar_color[0], bar_color[1], bar_color[2]
+            ], dtype=np.float32),
+            'indices': np.array([0,1,2, 0,3,2], dtype=np.uint32),
+            'position': np.array([0,0,0], dtype=np.float32),
+            'rotation_z': 0.0,
+            'scale': np.array([1,1,1], dtype=np.float32)
+        }
+        Object(self.shaders[0], bar_fill_props).Draw()
+
+        # Draw health text inside the health bar
+        # imgui.set_cursor_pos((screen_left + 10, bar_top - bar_height + 5))
+        # imgui.text_colored(f"Health: {self.health}", 0.0, 0.0, 0.0, 1.0)
+
+        # # Draw "Lives:" text after the health bar
+        # imgui.set_cursor_pos((screen_right - 150, bar_top - bar_height + 5))
+        # imgui.text("Lives:")
+
+        # Draw hearts for lives, offset to the right
+        hearts_offset_x = screen_right - 30.0
+        for i in range(self.lives):
+            heart_verts, heart_inds = CreateHeartIcon(radius=8, color=[1.0, 0.0, 0.0])
+            heart_obj = Object(self.shaders[0], {
+                'name': 'heart_icon',
+                'vertices': np.array(heart_verts, dtype=np.float32),
+                'indices': np.array(heart_inds, dtype=np.uint32),
+                'position': np.array([hearts_offset_x - i*25.0, bar_top - bar_height/2, 0], dtype=np.float32),
+                'rotation_z': 0.0,
+                'scale': np.array([1,1,1], dtype=np.float32)
+            })
+            heart_obj.Draw()
+
     def UpdateScene(self, inputs, time):
         # Move the player with WASD
         delta = time['deltaTime']
@@ -291,8 +409,8 @@ class Game:
 
 
         if self.screen == 0:
-            # Example jump logic
-            jump_key = 'SPACE'  # or another key
+
+            jump_key = 'SPACE'  
             min_jump = 50.0
             max_jump = 300.0
 
@@ -365,11 +483,210 @@ class Game:
 
                 self.jump_charge_time = 0.0
 
+            # Door logic: if player is near exit_door and has 3 keys, move keys into door slots and switch map
+            if player_obj:
+                exit_door_obj = next((o for o in self.objects if o.properties['name'] == 'exit_door'), None)
+                if exit_door_obj:
+                    dist_door = np.linalg.norm(player_obj.properties['position'] - exit_door_obj.properties['position'])
+                    if dist_door < exit_door_obj.properties['radius']:
+                        # Count attached keys
+                        attached_keys = [k for k in self.objects if k.properties.get('attached_to_player')]
+                        if len(attached_keys) >= 3:
+                            # Position the keys in the door's “slots”
+                            slot_offset = -10
+                            for k in attached_keys[:3]:
+                                slot_offset += 10
+                                k.properties['position'] = exit_door_obj.properties['position'] + np.array([slot_offset, 0, 5], dtype=np.float32)
+                                k.properties['attached_to_player'] = False
+                            # Switch map
+                            self.switch_map()
 
         if self.screen == 1:
-            pass
+
+            jump_key = 'SPACE'  
+            min_jump = 50.0
+            max_jump = 300.0
+
+            self.player_on_rock = None
+            player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
+            if player_obj:
+                for rock in (o for o in self.objects if o.properties['name'] == 'stone'):
+                    dist = np.linalg.norm(player_obj.properties['position'] - rock.properties['position'])
+                    if dist < rock.properties['radius']:
+                        self.player_on_rock = rock
+                        break
+
+            # If on rock, move player along with rock
+            if self.player_on_rock is not None and player_obj:
+                # The rock moves downward => replicate the same shift
+                rock = self.player_on_rock
+                player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+                
+                # Check if there's a key on this same rock
+                for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
+                    dist_key_rock = np.linalg.norm(key_obj.properties['position'] - rock.properties['position'])
+                    if dist_key_rock < rock.properties['radius']:
+                        # Attach key to player
+                        key_obj.properties['attached_to_player'] = True
+
+            # If a key is attached to the player, sync its position
+            if player_obj:
+                x_pos = -40
+                for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
+                    if key_obj.properties.get('attached_to_player'):
+                        x_pos += 20
+                        key_obj.properties['position'] = player_obj.properties['position'] + np.array([x_pos, 7, 2], dtype=np.float32)
+
+            # Accumulate jump charge if jump key is pressed
+            if jump_key in inputs:
+                self.jump_charge_time += delta
+                self.jump_charge_time = min(self.jump_charge_time, 7.0)  # clamp max charge time
+            # On jump key release, perform jump
+            else:
+                if self.jump_charge_time > 0.0:
+                    # print(f"Jumping with charge time: {self.jump_charge_time}")
+                    distance_factor = self.jump_charge_time * 200.0
+                    jump_dist = max(min_jump, min(max_jump, distance_factor))
+                    # Use last movement direction or a chosen direction
+                    dx = 0.0
+                    dy = 0.0
+                    # if 'W' in inputs: dy += 1.0
+                    # if 'S' in inputs: dy -= 1.0
+                    # if 'A' in inputs: dx -= 1.0
+                    # if 'D' in inputs: dx += 1.0
+                    
+                    # Use hold times to define direction
+                    dy += self.keyHoldTimes['W']
+                    dy -= self.keyHoldTimes['S']
+                    dx += self.keyHoldTimes['D']
+                    dx -= self.keyHoldTimes['A']
+                    # Normalize direction
+                    length = (dx**2 + dy**2)**0.5
+                    # print(f"Jump direction: {dx}, {dy}")
+                    if length > 0.0:
+                        dx /= length
+                        dy /= length
+                    # Apply jump
+                    # print(f"Jumping with distance: {jump_dist}")
+                    # print(f'self.player.properties["position"]: {player_obj.properties["position"]}')
+                    if player_obj:
+                        player_obj.properties['position'][0] += dx * jump_dist
+                        player_obj.properties['position'][1] += dy * jump_dist
+                    # print(f'self.player.properties["position"]: {player_obj.properties["position"]}')
+
+                self.jump_charge_time = 0.0
+
+            # Door logic: if player is near exit_door and has 3 keys, move keys into door slots and switch map
+            if player_obj:
+                exit_door_obj = next((o for o in self.objects if o.properties['name'] == 'exit_door'), None)
+                if exit_door_obj:
+                    dist_door = np.linalg.norm(player_obj.properties['position'] - exit_door_obj.properties['position'])
+                    if dist_door < exit_door_obj.properties['radius']:
+                        # Count attached keys
+                        attached_keys = [k for k in self.objects if k.properties.get('attached_to_player')]
+                        if len(attached_keys) >= 3:
+                            # Position the keys in the door's “slots”
+                            slot_offset = -10
+                            for k in attached_keys[:3]:
+                                slot_offset += 10
+                                k.properties['position'] = exit_door_obj.properties['position'] + np.array([slot_offset, 0, 5], dtype=np.float32)
+                                k.properties['attached_to_player'] = False
+                            # Switch map
+                            self.switch_map()
+
         if self.screen == 2:
-            pass
+
+            jump_key = 'SPACE'  
+            min_jump = 50.0
+            max_jump = 300.0
+
+            self.player_on_rock = None
+            player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
+            if player_obj:
+                for rock in (o for o in self.objects if o.properties['name'] == 'stone'):
+                    dist = np.linalg.norm(player_obj.properties['position'] - rock.properties['position'])
+                    if dist < rock.properties['radius']:
+                        self.player_on_rock = rock
+                        break
+
+            # If on rock, move player along with rock
+            if self.player_on_rock is not None and player_obj:
+                # The rock moves downward => replicate the same shift
+                rock = self.player_on_rock
+                player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+                
+                # Check if there's a key on this same rock
+                for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
+                    dist_key_rock = np.linalg.norm(key_obj.properties['position'] - rock.properties['position'])
+                    if dist_key_rock < rock.properties['radius']:
+                        # Attach key to player
+                        key_obj.properties['attached_to_player'] = True
+
+            # If a key is attached to the player, sync its position
+            if player_obj:
+                x_pos = -40
+                for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
+                    if key_obj.properties.get('attached_to_player'):
+                        x_pos += 20
+                        key_obj.properties['position'] = player_obj.properties['position'] + np.array([x_pos, 7, 2], dtype=np.float32)
+
+            # Accumulate jump charge if jump key is pressed
+            if jump_key in inputs:
+                self.jump_charge_time += delta
+                self.jump_charge_time = min(self.jump_charge_time, 7.0)  # clamp max charge time
+            # On jump key release, perform jump
+            else:
+                if self.jump_charge_time > 0.0:
+                    # print(f"Jumping with charge time: {self.jump_charge_time}")
+                    distance_factor = self.jump_charge_time * 200.0
+                    jump_dist = max(min_jump, min(max_jump, distance_factor))
+                    # Use last movement direction or a chosen direction
+                    dx = 0.0
+                    dy = 0.0
+                    # if 'W' in inputs: dy += 1.0
+                    # if 'S' in inputs: dy -= 1.0
+                    # if 'A' in inputs: dx -= 1.0
+                    # if 'D' in inputs: dx += 1.0
+                    
+                    # Use hold times to define direction
+                    dy += self.keyHoldTimes['W']
+                    dy -= self.keyHoldTimes['S']
+                    dx += self.keyHoldTimes['D']
+                    dx -= self.keyHoldTimes['A']
+                    # Normalize direction
+                    length = (dx**2 + dy**2)**0.5
+                    # print(f"Jump direction: {dx}, {dy}")
+                    if length > 0.0:
+                        dx /= length
+                        dy /= length
+                    # Apply jump
+                    # print(f"Jumping with distance: {jump_dist}")
+                    # print(f'self.player.properties["position"]: {player_obj.properties["position"]}')
+                    if player_obj:
+                        player_obj.properties['position'][0] += dx * jump_dist
+                        player_obj.properties['position'][1] += dy * jump_dist
+                    # print(f'self.player.properties["position"]: {player_obj.properties["position"]}')
+
+                self.jump_charge_time = 0.0
+
+            # Door logic: if player is near exit_door and has 3 keys, move keys into door slots and switch map
+            if player_obj:
+                exit_door_obj = next((o for o in self.objects if o.properties['name'] == 'exit_door'), None)
+                if exit_door_obj:
+                    dist_door = np.linalg.norm(player_obj.properties['position'] - exit_door_obj.properties['position'])
+                    if dist_door < exit_door_obj.properties['radius']:
+                        # Count attached keys
+                        attached_keys = [k for k in self.objects if k.properties.get('attached_to_player')]
+                        if len(attached_keys) >= 3:
+                            # Position the keys in the door's “slots”
+                            slot_offset = -10
+                            for k in attached_keys[:3]:
+                                slot_offset += 10
+                                k.properties['position'] = exit_door_obj.properties['position'] + np.array([slot_offset, 0, 5], dtype=np.float32)
+                                k.properties['attached_to_player'] = False
+                            # Switch map
+                            self.switch_map()
+
             
     def DrawScene(self):
         if self.screen in (0, 1, 2):
@@ -378,6 +695,8 @@ class Game:
  
             for obj in self.objects:
                 obj.Draw()
+
+            self.DrawHUD()
             
     def switch_map(self):
         self.current_map += 1

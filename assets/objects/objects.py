@@ -235,6 +235,35 @@ def CreateKeyIcon(radius=5, color=[1.0, 1.0, 0.0], points=12):
     verts, inds = CreateCircle([0.0, 0.0, 0.0], radius, color, points)
     return verts, inds
 
+def CreateHeartIcon(radius=8, color=[1.0, 0.0, 0.0]):
+    """
+    Creates a simple heart shape using two circles plus a triangle-like shape.
+    You can tweak points for a more detailed heart.
+    """
+    # Left circle
+    left_circle_verts, left_circle_inds = CreateCircle([-0.5, 0.0, 1.0], radius, color, 16, 0)
+    # Right circle (shift x by +0.5 so it joins the left circle)
+    right_circle_verts, right_circle_inds = CreateCircle([0.5, 0.0, 1.0], radius, color, 16, len(left_circle_verts)//6)
+    
+    # Triangle portion (approx)
+    triangle_verts = [
+        0.0, -1.0*radius, 1.0, color[0], color[1], color[2],
+        -1.0*radius, 0.0, 1.0, color[0], color[1], color[2],
+        1.0*radius, 0.0, 1.0, color[0], color[1], color[2],
+    ]
+    triangle_inds = [0,1,2]
+    # Adjust the triangle indices offset
+    tri_offset = (len(left_circle_verts) + len(right_circle_verts)) // 6
+
+    # Combine everything
+    verts = left_circle_verts + right_circle_verts + triangle_verts
+    inds = left_circle_inds + right_circle_inds + [
+        triangle_inds[0] + tri_offset,
+        triangle_inds[1] + tri_offset,
+        triangle_inds[2] + tri_offset
+    ]
+    return verts, inds
+
 
 # Example properties for biomes
 spaceVerts, spaceInds = CreateSpaceBiome()
