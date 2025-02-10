@@ -530,19 +530,17 @@ class Game:
             y = max(-450.0, min(440.0, y))
             obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
 
+        if self.screen == 0:
 
         # Move stones if they have a 'speed' property
-        for obj in self.objects:
-            if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
-                # Move from top to bottom (or vice versa)
-                # print(time)
-                obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
-                # Reset if out of bounds
-                if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
-                    obj.properties['speed'] = -1 * obj.properties['speed']
-
-
-        if self.screen == 0:
+            for obj in self.objects:
+                if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
+                    # Move from top to bottom (or vice versa)
+                    # print(time)
+                    obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
+                    # Reset if out of bounds
+                    if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
+                        obj.properties['speed'] = -1 * obj.properties['speed']
 
             jump_key = 'SPACE'  
             min_jump = 50.0
@@ -637,6 +635,16 @@ class Game:
 
         if self.screen == 1:
 
+        # Move stones if they have a 'speed' property
+            for obj in self.objects:
+                if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
+                    # Move from top to bottom (or vice versa)
+                    # print(time)
+                    obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
+                    # Reset if out of bounds
+                    if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
+                        obj.properties['speed'] = -1 * obj.properties['speed']
+
             jump_key = 'SPACE'  
             min_jump = 50.0
             max_jump = 300.0
@@ -729,6 +737,16 @@ class Game:
                             self.switch_map()
 
         if self.screen == 2:
+
+            # Move stones if they have a 'speed' property
+            for obj in self.objects:
+                if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
+                    # Move from top to bottom (or vice versa)
+                    # print(time)
+                    obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
+                    # Reset if out of bounds
+                    if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
+                        obj.properties['speed'] = -1 * obj.properties['speed']
 
             jump_key = 'SPACE'  
             min_jump = 50.0
