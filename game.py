@@ -325,17 +325,15 @@ class Game:
         imgui.pop_style_color()
 
         imgui.same_line()
-        imgui.text_unformatted(f"| Time: {int(self.total_time)}s")
+        imgui.text_unformatted(f"                Time: {int(self.total_time)}s")
 
         # Draw heart icons for lives (using text hearts, but you could use textures if desired)
         imgui.same_line()
-        hearts_str = " | Lives: "
-        for _ in range(self.lives):
-            hearts_str += "♥ "
+        hearts_str = f"                 Lives: {self.lives}"
         imgui.text_unformatted(hearts_str)
 
         imgui.same_line()
-        imgui.text_unformatted(f"| Map: {self.screen + 1}")
+        imgui.text_unformatted(f"                Map: {self.screen + 1}")
 
         imgui.end()
 
