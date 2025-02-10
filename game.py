@@ -484,24 +484,6 @@ class Game:
             else:
                 self.is_game_over = True
                 return
-            
-        # Move enemies randomly
-        for obj in self.objects:
-            if obj.properties['name'] == 'enemy':
-                delta = time['deltaTime']
-                # Move in the stored direction at 'speed'
-                direction = obj.properties['direction']
-                speed = obj.properties['speed']
-                obj.properties['position'] += direction * speed * delta
-
-                # If near some boundary, flip direction or randomize again
-                x, y, z = obj.properties['position']
-                if abs(x) > 460 or abs(y) > 360: 
-                    obj.properties['direction'] = np.array([
-                        random.uniform(-1.0, 1.0),
-                        random.uniform(-1.0, 1.0),
-                        0.0
-                    ], dtype=np.float32)
 
         # Check for collisions between player and enemies
         player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
