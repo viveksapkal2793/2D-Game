@@ -20,17 +20,55 @@ class App:
             self.impl.process_inputs() 
             imgui.new_frame()
 
-            if self.show_main_menu:
-                self.show_main_menu_screen(inputs)
+            # If not showing main menu, check game status
+            if not self.show_main_menu:
+                if self.game.is_game_over:
+                    self.show_game_over_screen()
+                elif self.game.is_game_won:
+                    self.show_you_won_screen()
+                else:
+                    self.game.ProcessFrame(inputs, time)
+                    self.game.show_switch_map_button()
             else:
-                self.game.ProcessFrame(inputs, time)
-                self.game.show_switch_map_button()
+                self.show_main_menu_screen(inputs)
 
             imgui.render()
             self.impl.render(imgui.get_draw_data())
             self.window.EndFrame()
         
         self.window.Close()
+
+    def show_you_won_screen(self):
+        # Center the window
+        center_x = (self.window.windowWidth - 550) / 2
+        center_y = (self.window.windowHeight - 400) / 2
+        imgui.set_next_window_position(center_x, center_y)
+        imgui.set_next_window_size(600, 400)
+
+        imgui.begin("Victory!", True)
+        # Make the text larger
+        imgui.set_window_font_scale(10.0)
+        imgui.text_unformatted("YOU WON!")
+        imgui.set_window_font_scale(5.0)  # slightly smaller for the next lines
+        imgui.text_unformatted(f"Time taken: {int(self.game.total_time)}s")
+        imgui.end()
+
+    def show_game_over_screen(self):
+        # Center the window
+        center_x = (self.window.windowWidth - 850) / 2
+        center_y = (self.window.windowHeight - 600) / 2
+        imgui.set_next_window_position(center_x, center_y)
+        imgui.set_next_window_size(850, 600)
+
+        imgui.begin("Game Over", True)
+        # Make the text larger
+        imgui.set_window_font_scale(10.0)
+        imgui.text_unformatted("GAME OVER")
+        imgui.set_window_font_scale(5.0)
+        imgui.text_unformatted("You lost all your lives!")
+        if imgui.button("Return to Main Menu", 750, 100):
+            self.show_main_menu = True
+        imgui.end()
     
     def show_main_menu_screen(self, inputs):
         imgui.begin("Main Menu", True, imgui.WINDOW_NO_TITLE_BAR | imgui.WINDOW_NO_RESIZE | imgui.WINDOW_NO_MOVE)

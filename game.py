@@ -40,6 +40,8 @@ class Game:
         self.health = 100
         self.lives = 3
         self.total_time = 0.0
+        self.is_game_over = False
+        self.is_game_won = False
 
         # Store hold times for W, A, S, D in a dictionary
         self.keyHoldTimes = {
@@ -338,9 +340,31 @@ class Game:
         imgui.end()
 
     def UpdateScene(self, inputs, time):
+
+        # If lives drop to zero, mark game over
+        if self.lives <= 0:
+            self.is_game_over = True
+            return
+                
         # Move the player with WASD
         delta = time['deltaTime']
         speed = 100.0  # Adjust as needed
+        self.health -= 10*delta  # Reduce health over time
+
+        # Check if health reached zero
+        if self.health <= 0:
+            self.lives -= 1
+            if self.lives > 0:
+                self.health = 100
+                # Respawn at the bottom-left "entry_door"
+                spawn_door = next((o for o in self.objects if o.properties['name'] == 'entry_door'), None)
+                if spawn_door:
+                    player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
+                    if player_obj:
+                        player_obj.properties['position'] = spawn_door.properties['position'].copy()
+            else:
+                self.is_game_over = True
+                return
 
         for obj in self.objects:
             # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
@@ -666,9 +690,11 @@ class Game:
         self.current_map += 1
         self.screen += 1
         if self.current_map >= len(self.maps) or self.screen >= len(self.maps):
-            self.current_map = 0  # Loop back to the first map or handle game completion
-            self.screen = 0
-        self.InitScreen()
+            # self.current_map = 0  # Loop back to the first map or handle game completion
+            # self.screen = 0
+            self.is_game_won = True
+        else:
+            self.InitScreen()
         
     def show_switch_map_button(self):
         imgui.begin("Switch Map", True)
