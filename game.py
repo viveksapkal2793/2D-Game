@@ -5,23 +5,38 @@ from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
 from assets.objects.objects import playerProps, backgroundProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreateHeartIcon
 
-def random_nonoverlapping_position(existing_objs, new_radius, max_attempts=1000):
+def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
+
+    screen_left = -450
+    screen_right = 450
+    total_width = screen_right - screen_left
+    interval_width = (total_width - 200) / number_of_stones
+
     for _ in range(max_attempts):
-        x = random.uniform(-450, 450)
+        # Pick one of the intervals at random
+        # i = random.randint(0, number_of_stones - 1)
+        x_start = screen_left + i * (interval_width + 30)
+        x_end = x_start + interval_width - 10
+
+        # Sample a random x within that interval
+        x = random.uniform(x_start, x_end)
+        # Sample y normally
         y = random.uniform(-300, 300)
         center = np.array([x, y, 0], dtype=np.float32)
 
         overlap = False
         for obj in existing_objs:
-            # Only check objects that have a 'radius' property
-            if 'radius' in obj.properties:
+            if obj.properties['name'] == 'stone':
                 dist = np.linalg.norm(center - obj.properties['position'])
-                if dist < (new_radius + obj.properties['radius']) or (x < obj.properties['position'][0] + obj.properties['radius'] and x > obj.properties['position'][0] - obj.properties['radius']):
+                # Check if circles overlap
+                if dist < (new_radius + obj.properties['radius']) or abs(obj.properties['position'][0] - center[0]) < 2*new_radius:
                     overlap = True
                     break
+
         if not overlap:
             return center
+
     return None 
 
 class Game:
@@ -84,9 +99,9 @@ class Game:
         objs.append(exit_door)
 
         # Add random non-overlapping stones
-        for _ in range(8):
+        for i in range(8):
             r = 40
-            pos = random_nonoverlapping_position(objs, r)
+            pos = random_nonoverlapping_position(objs, r, i)
             if pos is None:
                 # If we can't find a valid spot, just skip or place at a default
                 continue
@@ -144,9 +159,9 @@ class Game:
         objs.append(exit_door)
 
         # Add random non-overlapping stones
-        for _ in range(8):
+        for i in range(8):
             r = 40
-            pos = random_nonoverlapping_position(objs, r)
+            pos = random_nonoverlapping_position(objs, r, i)
             if pos is None:
                 # If we can't find a valid spot, just skip or place at a default
                 continue
@@ -204,9 +219,9 @@ class Game:
         objs.append(exit_door)
 
         # Add random non-overlapping stones
-        for _ in range(8):
+        for i in range(8):
             r = 40
-            pos = random_nonoverlapping_position(objs, r)
+            pos = random_nonoverlapping_position(objs, r, i)
             if pos is None:
                 # If we can't find a valid spot, just skip or place at a default
                 continue
@@ -349,7 +364,7 @@ class Game:
         # Move the player with WASD
         delta = time['deltaTime']
         speed = 100.0  # Adjust as needed
-        self.health -= 10*delta  # Reduce health over time
+        # self.health -= 10*delta  # Reduce health over time
 
         # Check if health reached zero
         if self.health <= 0:
