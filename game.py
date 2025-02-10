@@ -532,6 +532,24 @@ class Game:
 
         if self.screen == 0:
 
+            # Move enemies randomly
+            for obj in self.objects:
+                if obj.properties['name'] == 'enemy':
+                    delta = time['deltaTime']
+                    # Move in the stored direction at 'speed'
+                    direction = obj.properties['direction']
+                    speed = obj.properties['speed']
+                    obj.properties['position'] += direction * speed * delta
+
+                    # If near some boundary, flip direction or randomize again
+                    x, y, z = obj.properties['position']
+                    if abs(x) > 460 or abs(y) > 360: 
+                        obj.properties['direction'] = np.array([
+                            random.uniform(-1.0, 1.0),
+                            random.uniform(-1.0, 1.0),
+                            0.0
+                        ], dtype=np.float32)
+
         # Move stones if they have a 'speed' property
             for obj in self.objects:
                 if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
@@ -635,6 +653,24 @@ class Game:
 
         if self.screen == 1:
 
+            # Move enemies randomly
+            for obj in self.objects:
+                if obj.properties['name'] == 'enemy':
+                    delta = time['deltaTime']
+                    # Move in the stored direction at 'speed'
+                    direction = obj.properties['direction']
+                    speed = obj.properties['speed']
+                    obj.properties['position'] += direction * speed * delta
+
+                    # If near some boundary, flip direction or randomize again
+                    x, y, z = obj.properties['position']
+                    if abs(x) > 460 or abs(y) > 360: 
+                        obj.properties['direction'] = np.array([
+                            random.uniform(-1.0, 1.0),
+                            random.uniform(-1.0, 1.0),
+                            0.0
+                        ], dtype=np.float32)
+
         # Move stones if they have a 'speed' property
             for obj in self.objects:
                 if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
@@ -737,6 +773,24 @@ class Game:
                             self.switch_map()
 
         if self.screen == 2:
+
+            # Move enemies randomly
+            for obj in self.objects:
+                if obj.properties['name'] == 'enemy':
+                    delta = time['deltaTime']
+                    # Move in the stored direction at 'speed'
+                    direction = obj.properties['direction']
+                    speed = obj.properties['speed']
+                    obj.properties['position'] += direction * speed * delta
+
+                    # If near some boundary, flip direction or randomize again
+                    x, y, z = obj.properties['position']
+                    if abs(x) > 460 or abs(y) > 360: 
+                        obj.properties['direction'] = np.array([
+                            random.uniform(-1.0, 1.0),
+                            random.uniform(-1.0, 1.0),
+                            0.0
+                        ], dtype=np.float32)
 
             # Move stones if they have a 'speed' property
             for obj in self.objects:
