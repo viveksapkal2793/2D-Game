@@ -503,6 +503,15 @@ class Game:
                         0.0
                     ], dtype=np.float32)
 
+        # Check for collisions between player and enemies
+        player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
+        if player_obj:
+            for obj in self.objects:
+                if obj.properties['name'] == 'enemy':
+                    dist = np.linalg.norm(player_obj.properties['position'] - obj.properties['position'])
+                    if dist < (player_obj.properties['radius'] + obj.properties['radius']):
+                        self.health -= 10 * delta  # Reduce health over time when in contact
+
         for obj in self.objects:
             # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
             if obj is not None and obj.properties['name'] == 'player':
@@ -529,7 +538,7 @@ class Game:
                 # print(time)
                 obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
                 # Reset if out of bounds
-                if obj.properties['position'][1] < -360 or obj.properties['position'][1] > 360:
+                if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
                     obj.properties['speed'] = -1 * obj.properties['speed']
 
 

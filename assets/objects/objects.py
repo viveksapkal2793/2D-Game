@@ -200,7 +200,9 @@ playerProps = {
 
     'sens' : 125,
 
-    'velocity' : np.array([0, 0, 0], dtype = np.float32)
+    'velocity' : np.array([0, 0, 0], dtype = np.float32),
+
+    'radius': 25
 }
 
 backgroundVerts, backgroundInds = CreateBackground()
