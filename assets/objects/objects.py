@@ -65,6 +65,96 @@ def CreatePlayer():
 
     return vertices, indices
 
+def CreateSpaceEnemy():
+
+    vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
+
+    eye_verts1, eye_inds1 = CreateCircle([0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
+    vertices += eye_verts1
+    indices += eye_inds1
+
+    eye_verts2, eye_inds2 = CreateCircle([-0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
+    vertices += eye_verts2
+    indices += eye_inds2
+
+    eye_verts3, eye_inds3 = CreateCircle([-0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    vertices += eye_verts3
+    indices += eye_inds3
+
+    eye_verts4, eye_inds4 = CreateCircle([0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    vertices += eye_verts4
+    indices += eye_inds4
+
+    eye_verts5, eye_inds5 = CreateCircle([0.0, 0.0, 0.2], 1.0, [1,0,0], 25, len(vertices)/6, True)
+    vertices += eye_verts5
+    indices += eye_inds5
+
+    eye_verts6, eye_inds6 = CreateCircle([0.0, 0.95, 0.3], 0.3, [0.9,0.9,0.9], 20, len(vertices)/6)
+    vertices += eye_verts6
+    indices += eye_inds6
+
+    return vertices, indices
+
+def CreateJungleEnemy():
+
+    vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
+
+    eye_verts1, eye_inds1 = CreateCircle([0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
+    vertices += eye_verts1
+    indices += eye_inds1
+
+    eye_verts2, eye_inds2 = CreateCircle([-0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
+    vertices += eye_verts2
+    indices += eye_inds2
+
+    eye_verts3, eye_inds3 = CreateCircle([-0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    vertices += eye_verts3
+    indices += eye_inds3
+
+    eye_verts4, eye_inds4 = CreateCircle([0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    vertices += eye_verts4
+    indices += eye_inds4
+
+    eye_verts5, eye_inds5 = CreateCircle([0.0, 0.0, 0.2], 1.0, [1,0,0], 25, len(vertices)/6, True)
+    vertices += eye_verts5
+    indices += eye_inds5
+
+    eye_verts6, eye_inds6 = CreateCircle([0.0, 0.95, 0.3], 0.3, [0.9,0.9,0.9], 20, len(vertices)/6)
+    vertices += eye_verts6
+    indices += eye_inds6
+
+    return vertices, indices
+
+def CreateRiverEnemy():
+
+    vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
+
+    eye_verts1, eye_inds1 = CreateCircle([0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
+    vertices += eye_verts1
+    indices += eye_inds1
+
+    eye_verts2, eye_inds2 = CreateCircle([-0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
+    vertices += eye_verts2
+    indices += eye_inds2
+
+    eye_verts3, eye_inds3 = CreateCircle([-0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    vertices += eye_verts3
+    indices += eye_inds3
+
+    eye_verts4, eye_inds4 = CreateCircle([0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    vertices += eye_verts4
+    indices += eye_inds4
+
+    eye_verts5, eye_inds5 = CreateCircle([0.0, 0.0, 0.2], 1.0, [1,0,0], 25, len(vertices)/6, True)
+    vertices += eye_verts5
+    indices += eye_inds5
+
+    eye_verts6, eye_inds6 = CreateCircle([0.0, 0.95, 0.3], 0.3, [0.9,0.9,0.9], 20, len(vertices)/6)
+    vertices += eye_verts6
+    indices += eye_inds6
+
+    return vertices, indices
+
 def CreateBackground():
     grassColour = [0,1,0]
     waterColour = [0,0,1]

@@ -3,7 +3,7 @@ import numpy as np
 import random
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, backgroundProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreateHeartIcon
+from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy
 
 def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -31,6 +31,29 @@ def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stone
                 dist = np.linalg.norm(center - obj.properties['position'])
                 # Check if circles overlap
                 if dist < (new_radius + obj.properties['radius']) or abs(obj.properties['position'][0] - center[0]) < 2*new_radius:
+                    overlap = True
+                    break
+
+        if not overlap:
+            return center
+
+    return None 
+
+def random_enemy_position(existing_objs, new_radius, max_attempts=1000):
+    """
+    Picks a random position within a given range and checks for overlap 
+    with existing objects that have a 'radius' property.
+    """
+    for _ in range(max_attempts):
+        x = random.uniform(-350, 350)
+        y = random.uniform(-250, 250)
+        center = np.array([x, y, 0], dtype=np.float32)
+
+        overlap = False
+        for obj in existing_objs:
+            if 'radius' in obj.properties:
+                dist = np.linalg.norm(center - obj.properties['position'])
+                if dist < (new_radius + obj.properties['radius']):
                     overlap = True
                     break
 
@@ -140,7 +163,34 @@ class Game:
                 })
                 stone_objs.append(key_obj)
 
+        # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
+        enemy_objs = []
+        for i in range(3):
+            enemy_verts, enemy_inds = CreateSpaceEnemy()
+            enemy_radius = 25
+            pos = random_enemy_position(enemy_objs, enemy_radius)
+            if pos is None:
+                continue
+            enemy_obj = Object(self.shaders[0], {
+                'name': 'enemy',
+                'vertices': np.array(enemy_verts, dtype=np.float32),
+                'indices': np.array(enemy_inds, dtype=np.uint32),
+                'position': pos,
+                'rotation_z': 0.0,
+                'scale': np.array([30, 30, 1], dtype=np.float32),  # Similar to player
+                'speed': random.uniform(40, 90),  # Random speed
+                'radius': enemy_radius,
+                # direction: random normalized direction
+                'direction': np.array([
+                    random.uniform(-1.0, 1.0),
+                    random.uniform(-1.0, 1.0),
+                    0.0
+                ], dtype=np.float32),
+            })
+            enemy_objs.append(enemy_obj)
+
         objs.extend(stone_objs)
+        objs.extend(enemy_objs)
 
         return objs
 
@@ -200,7 +250,34 @@ class Game:
                 })
                 stone_objs.append(key_obj)
 
+        # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
+        enemy_objs = []
+        for i in range(3):
+            enemy_verts, enemy_inds = CreateJungleEnemy()
+            enemy_radius = 25
+            pos = random_enemy_position(enemy_objs, enemy_radius)
+            if pos is None:
+                continue
+            enemy_obj = Object(self.shaders[0], {
+                'name': 'enemy',
+                'vertices': np.array(enemy_verts, dtype=np.float32),
+                'indices': np.array(enemy_inds, dtype=np.uint32),
+                'position': pos,
+                'rotation_z': 0.0,
+                'scale': np.array([30, 30, 1], dtype=np.float32),  # Similar to player
+                'speed': random.uniform(40, 90),  # Random speed
+                'radius': enemy_radius,
+                # direction: random normalized direction
+                'direction': np.array([
+                    random.uniform(-1.0, 1.0),
+                    random.uniform(-1.0, 1.0),
+                    0.0
+                ], dtype=np.float32),
+            })
+            enemy_objs.append(enemy_obj)
+
         objs.extend(stone_objs)
+        objs.extend(enemy_objs)
 
         return objs
 
@@ -260,7 +337,34 @@ class Game:
                 })
                 stone_objs.append(key_obj)
 
+        # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
+        enemy_objs = []
+        for i in range(3):
+            enemy_verts, enemy_inds = CreateRiverEnemy()
+            enemy_radius = 25
+            pos = random_enemy_position(enemy_objs, enemy_radius)
+            if pos is None:
+                continue
+            enemy_obj = Object(self.shaders[0], {
+                'name': 'enemy',
+                'vertices': np.array(enemy_verts, dtype=np.float32),
+                'indices': np.array(enemy_inds, dtype=np.uint32),
+                'position': pos,
+                'rotation_z': 0.0,
+                'scale': np.array([30, 30, 1], dtype=np.float32),  # Similar to player
+                'speed': random.uniform(40, 90),  # Random speed
+                'radius': enemy_radius,
+                # direction: random normalized direction
+                'direction': np.array([
+                    random.uniform(-1.0, 1.0),
+                    random.uniform(-1.0, 1.0),
+                    0.0
+                ], dtype=np.float32),
+            })
+            enemy_objs.append(enemy_obj)
+
         objs.extend(stone_objs)
+        objs.extend(enemy_objs)
 
         return objs
 
@@ -380,6 +484,24 @@ class Game:
             else:
                 self.is_game_over = True
                 return
+            
+        # Move enemies randomly
+        for obj in self.objects:
+            if obj.properties['name'] == 'enemy':
+                delta = time['deltaTime']
+                # Move in the stored direction at 'speed'
+                direction = obj.properties['direction']
+                speed = obj.properties['speed']
+                obj.properties['position'] += direction * speed * delta
+
+                # If near some boundary, flip direction or randomize again
+                x, y, z = obj.properties['position']
+                if abs(x) > 460 or abs(y) > 360: 
+                    obj.properties['direction'] = np.array([
+                        random.uniform(-1.0, 1.0),
+                        random.uniform(-1.0, 1.0),
+                        0.0
+                    ], dtype=np.float32)
 
         for obj in self.objects:
             # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
