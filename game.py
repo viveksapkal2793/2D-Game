@@ -312,82 +312,32 @@ class Game:
                           imgui.WINDOW_NO_SCROLLBAR |
                           imgui.WINDOW_NO_SAVED_SETTINGS)
 
-        # Display the text horizontally, separated by spaces or pipes
-        imgui.text_unformatted(f"Health: {self.health}% | "
-                               f"Time: {int(self.total_time)}s | "
-                               f"Lives: {self.lives} | "
-                               f"Map: {self.screen + 1}")
+        # Health ratio for the bar
+        health_ratio = max(0.0, min(1.0, self.health / 100.0))
+        # Color transitions from red (low health) to green (full health)
+        bar_color = (1.0 - health_ratio, health_ratio, 0.0, 1.0)
+
+        # Draw health bar
+        imgui.text_unformatted("Health: ")
+        imgui.same_line()
+        imgui.push_style_color(imgui.COLOR_PLOT_HISTOGRAM, *bar_color)
+        imgui.progress_bar(health_ratio, size=(self.width * 0.3, 0), overlay="")
+        imgui.pop_style_color()
+
+        imgui.same_line()
+        imgui.text_unformatted(f"| Time: {int(self.total_time)}s")
+
+        # Draw heart icons for lives (using text hearts, but you could use textures if desired)
+        imgui.same_line()
+        hearts_str = " | Lives: "
+        for _ in range(self.lives):
+            hearts_str += "♥ "
+        imgui.text_unformatted(hearts_str)
+
+        imgui.same_line()
+        imgui.text_unformatted(f"| Map: {self.screen + 1}")
 
         imgui.end()
-
-    # def DrawHUD(self):
-    #     """
-    #     Updated HUD that spans full screen width at the top with a bordered health bar and heart icons.
-    #     """
-
-    #     # Use the full viewport width for the bar. For a 1000 px wide screen (approx) from -500 to +500.
-    #     screen_left = -500.0
-    #     screen_right = 500.0
-    #     bar_height = 20.0  # total height for the bar (including border)
-    #     bar_top = 500.0    # near the top
-    #     border_thickness = 2.0
-
-    #     # Calculate health ratio and color (red at 0 health, green at full health)
-    #     health_ratio = max(0, min(1, self.health / 100.0))
-    #     bar_r = 1.0 - health_ratio
-    #     bar_g = health_ratio
-    #     bar_color = [bar_r, bar_g, 0.0]
-
-    #     # Draw the outer border (white or gray)
-    #     bar_bg_props = {
-    #         'name': 'health_bar_border',
-    #         'vertices': np.array([
-    #             screen_left, bar_top, 0.0, 0.0, 0.0, 0.0,
-    #             screen_right, bar_top, 0.0, 0.0, 0.0, 0.0,
-    #             screen_right, bar_top - bar_height, 0.0, 0.0, 0.0, 0.0,
-    #             screen_left, bar_top - bar_height, 0.0, 0.0, 0.0, 0.0
-    #         ], dtype=np.float32),
-    #         'indices': np.array([0,1,2, 0,3,2], dtype=np.uint32),
-    #         'position': np.array([0,0,0], dtype=np.float32),
-    #         'rotation_z': 0.0,
-    #         'scale': np.array([1,1,1], dtype=np.float32)
-    #     }
-    #     Object(self.shaders[0], bar_bg_props).Draw()
-
-    #     # Draw the filled part (inner rectangle)
-    #     fill_left = screen_left + border_thickness
-    #     fill_right = fill_left + ((screen_right - 450) - screen_left - 2*border_thickness)*health_ratio
-    #     fill_top = bar_top - border_thickness
-    #     fill_bottom = bar_top - bar_height + border_thickness
-
-    #     bar_fill_props = {
-    #         'name': 'health_bar_fill',
-    #         'vertices': np.array([
-    #             fill_left, fill_top, 1.0, bar_color[0], bar_color[1], bar_color[2],
-    #             fill_right, fill_top, 1.0, bar_color[0], bar_color[1], bar_color[2],
-    #             fill_right, fill_bottom, 1.0, bar_color[0], bar_color[1], bar_color[2],
-    #             fill_left, fill_bottom, 1.0, bar_color[0], bar_color[1], bar_color[2]
-    #         ], dtype=np.float32),
-    #         'indices': np.array([0,1,2, 0,3,2], dtype=np.uint32),
-    #         'position': np.array([0,0,0], dtype=np.float32),
-    #         'rotation_z': 0.0,
-    #         'scale': np.array([1,1,1], dtype=np.float32)
-    #     }
-    #     Object(self.shaders[0], bar_fill_props).Draw()
-
-    #     # Draw hearts for lives, offset to the right
-    #     hearts_offset_x = screen_right - 30.0
-    #     for i in range(self.lives):
-    #         heart_verts, heart_inds = CreateHeartIcon(radius=8, color=[1.0, 0.0, 0.0])
-    #         heart_obj = Object(self.shaders[0], {
-    #             'name': 'heart_icon',
-    #             'vertices': np.array(heart_verts, dtype=np.float32),
-    #             'indices': np.array(heart_inds, dtype=np.uint32),
-    #             'position': np.array([hearts_offset_x - i*25.0, bar_top - bar_height/2, 0], dtype=np.float32),
-    #             'rotation_z': 0.0,
-    #             'scale': np.array([1,1,1], dtype=np.float32)
-    #         })
-    #         heart_obj.Draw()
 
     def UpdateScene(self, inputs, time):
         # Move the player with WASD
