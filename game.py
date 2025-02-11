@@ -771,6 +771,11 @@ class Game:
                         self.player_on_rock = rock
                         break
 
+            if self.player_on_rock is None and player_obj is not None:
+                x, y, _ = player_obj.properties['position']
+                if -500 < x < 500 and -400 < y < 400:
+                    self.health -= 20 * delta
+
             # If on rock, move player along with rock
             if self.player_on_rock is not None and player_obj:
                 # The rock moves downward => replicate the same shift
@@ -917,9 +922,8 @@ class Game:
             
             if self.player_on_rock is None and player_obj is not None:
                 x, y, _ = player_obj.properties['position']
-                # Example "middle part" region check
                 if -500 < x < 500 and -400 < y < 400:
-                    self.health -= 5 * delta  # Reduce health over time when in contact
+                    self.health -= 5 * delta  # Reduce health over time when not on a stone
 
             if player_obj is not None:
                 # Check if player is inside the sun stone
