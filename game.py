@@ -551,6 +551,7 @@ class Game:
         #         obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
 
         if self.screen == 0:
+
             player_speed = 100.0
             for obj in self.objects:
                 # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
@@ -709,6 +710,7 @@ class Game:
                             self.switch_map()
 
         if self.screen == 1:
+
             player_speed = 100.0
             for obj in self.objects:
                 # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
@@ -746,7 +748,7 @@ class Game:
                             0.0
                         ], dtype=np.float32)
 
-        # Move stones if they have a 'speed' property
+        # Move stones top to bottom and vice versa
             for obj in self.objects:
                 if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
                     # Move from top to bottom (or vice versa)
@@ -848,7 +850,8 @@ class Game:
                             self.switch_map()
 
         if self.screen == 2:
-            player_speed = 25.0
+
+            player_speed = 40.0
             for obj in self.objects:
                 # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
                 if obj is not None and obj.properties['name'] == 'player':
@@ -901,16 +904,33 @@ class Game:
 
             jump_key = 'SPACE'  
             min_jump = 50.0
-            max_jump = 300.0
+            max_jump = 200.0
 
             self.player_on_rock = None
             player_obj = next((o for o in self.objects if o.properties['name'] == 'player'), None)
             if player_obj:
                 for rock in (o for o in self.objects if o.properties['name'] == 'stone'):
                     dist = np.linalg.norm(player_obj.properties['position'] - rock.properties['position'])
-                    if dist < rock.properties['radius']:
+                    if dist < rock.properties['radius'] and not rock.properties['is_sun']:
                         self.player_on_rock = rock
                         break
+            
+            if self.player_on_rock is None and player_obj is not None:
+                x, y, _ = player_obj.properties['position']
+                # Example "middle part" region check
+                if -500 < x < 500 and -400 < y < 400:
+                    self.health -= 5 * delta  # Reduce health over time when in contact
+
+            if player_obj is not None:
+                # Check if player is inside the sun stone
+                for obj_stone in [o for o in self.objects if o.properties['name'] == 'stone']:
+                    if obj_stone.properties['is_sun']:
+                        stone_pos = obj_stone.properties['position']
+                        stone_radius = obj_stone.properties['radius']
+                        player_pos = player_obj.properties['position']
+                        distance = np.linalg.norm(player_pos - stone_pos)
+                        if distance < stone_radius:
+                            self.health = 0  # Player loses all health if inside the sun stone
 
             # If on rock, move player along with rock
             if self.player_on_rock is not None and player_obj:
