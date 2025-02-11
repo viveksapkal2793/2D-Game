@@ -254,7 +254,14 @@ class Game:
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),
                 'speed': random.uniform(50, 120),
-                'radius': r
+                'radius': r,
+                'direction': np.array([
+                    random.uniform(-1.0, 1.0),
+                    random.uniform(-1.0, 1.0),
+                    0.0
+                ], dtype=np.float32),
+                'carries_key': False,
+                'key_obj': None
             })
             stone_objs.append(stone_obj)
 
@@ -275,8 +282,12 @@ class Game:
                     'scale': np.array([1, 1, 1], dtype=np.float32),
                     'speed': s.properties['speed'],
                     'has_key': True,  # custom flag to indicate it's a key
-                    'attached_to_player': False
+                    'attached_to_player': False,
+                    'direction': s.properties['direction'].copy(),
+                    'owner_stone': s
                 })
+                s.properties['carries_key'] = True
+                s.properties['key_obj'] = key_obj
                 stone_objs.append(key_obj)
 
         # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
@@ -561,15 +572,44 @@ class Game:
                             0.0
                         ], dtype=np.float32)
 
-        # Move stones if they have a 'speed' property
+        # # Move stones if they have a 'speed' property
+        #     for obj in self.objects:
+        #         if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
+        #             # Move from top to bottom (or vice versa)
+        #             # print(time)
+        #             obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
+        #             # Reset if out of bounds
+        #             if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
+        #                 obj.properties['speed'] = -1 * obj.properties['speed']
+
+            # Move stones randomly
             for obj in self.objects:
-                if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
-                    # Move from top to bottom (or vice versa)
-                    # print(time)
-                    obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
-                    # Reset if out of bounds
-                    if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
-                        obj.properties['speed'] = -1 * obj.properties['speed']
+                delta = time['deltaTime']
+                if obj.properties['name'] == 'stone':
+                    direction = obj.properties['direction']
+                    speed = obj.properties['speed']
+                    obj.properties['position'] += direction * speed * delta
+
+                    # If near some boundary, flip direction or randomize again
+                    x, y, z = obj.properties['position']
+                    if abs(x) > 460 or abs(y) > 360:
+                        if obj.properties['carries_key']:
+                            obj.properties['direction'] = np.array([
+                                random.uniform(-1.0, 1.0),
+                                random.uniform(-1.0, 1.0),
+                                0.0
+                            ], dtype=np.float32)
+                            obj.properties['key_obj'].properties['direction'] = obj.properties['direction'].copy()
+                        else:
+                            obj.properties['direction'] = np.array([
+                                random.uniform(-1.0, 1.0),
+                                random.uniform(-1.0, 1.0),
+                                0.0
+                            ], dtype=np.float32)
+
+                # If the object is a key, update its position to follow the owner stone
+                if obj.properties['name'] == 'key':
+                    obj.properties['position'] += obj.properties['direction'] * obj.properties['speed'] * delta
 
             jump_key = 'SPACE'  
             min_jump = 50.0
@@ -832,7 +872,6 @@ class Game:
 
             # If on rock, move player along with rock
             if self.player_on_rock is not None and player_obj:
-                # The rock moves downward => replicate the same shift
                 rock = self.player_on_rock
                 player_obj.properties['position'] = rock.properties['position']
                 
