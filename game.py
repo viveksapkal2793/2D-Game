@@ -505,10 +505,8 @@ class Game:
             self.is_game_over = True
             return
                 
-        # Move the player with WASD
         delta = time['deltaTime']
-        speed = 100.0  # Adjust as needed
-        # self.health -= 10*delta  # Reduce health over time
+        player_speed = 100.0 
 
         # Check if health reached zero
         if self.health <= 0:
@@ -534,25 +532,43 @@ class Game:
                     if dist < (player_obj.properties['radius'] + obj.properties['radius']):
                         self.health -= 10 * delta  # Reduce health over time when in contact
 
-        for obj in self.objects:
-            # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
-            if obj is not None and obj.properties['name'] == 'player':
-                if 'W' in inputs:
-                    obj.properties['position'][1] += speed * delta
-                if 'S' in inputs:
-                    obj.properties['position'][1] -= speed * delta
-                if 'A' in inputs:
-                    obj.properties['position'][0] -= speed * delta
-                if 'D' in inputs:
-                    obj.properties['position'][0] += speed * delta
+        # for obj in self.objects:
+        #     # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
+        #     if obj is not None and obj.properties['name'] == 'player':
+        #         if 'W' in inputs:
+        #             obj.properties['position'][1] += player_speed * delta
+        #         if 'S' in inputs:
+        #             obj.properties['position'][1] -= player_speed * delta
+        #         if 'A' in inputs:
+        #             obj.properties['position'][0] -= player_speed * delta
+        #         if 'D' in inputs:
+        #             obj.properties['position'][0] += player_speed * delta
 
-            # Clamp the player's position to avoid going out of screen bounds
-            x, y, z = obj.properties['position']
-            x = max(-470.0, min(470.0, x))
-            y = max(-450.0, min(440.0, y))
-            obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
+        #         # Clamp the player's position to avoid going out of screen bounds
+        #         x, y, z = obj.properties['position']
+        #         x = max(-470.0, min(470.0, x))
+        #         y = max(-450.0, min(440.0, y))
+        #         obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
 
         if self.screen == 0:
+            player_speed = 100.0
+            for obj in self.objects:
+                # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
+                if obj is not None and obj.properties['name'] == 'player':
+                    if 'W' in inputs:
+                        obj.properties['position'][1] += player_speed * delta
+                    if 'S' in inputs:
+                        obj.properties['position'][1] -= player_speed * delta
+                    if 'A' in inputs:
+                        obj.properties['position'][0] -= player_speed * delta
+                    if 'D' in inputs:
+                        obj.properties['position'][0] += player_speed * delta
+
+                    # Clamp the player's position to avoid going out of screen bounds
+                    x, y, z = obj.properties['position']
+                    x = max(-470.0, min(470.0, x))
+                    y = max(-450.0, min(440.0, y))
+                    obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
 
             # Move enemies randomly
             for obj in self.objects:
@@ -571,16 +587,6 @@ class Game:
                             random.uniform(-1.0, 1.0),
                             0.0
                         ], dtype=np.float32)
-
-        # # Move stones if they have a 'speed' property
-        #     for obj in self.objects:
-        #         if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
-        #             # Move from top to bottom (or vice versa)
-        #             # print(time)
-        #             obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
-        #             # Reset if out of bounds
-        #             if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
-        #                 obj.properties['speed'] = -1 * obj.properties['speed']
 
             # Move stones randomly
             for obj in self.objects:
@@ -703,6 +709,24 @@ class Game:
                             self.switch_map()
 
         if self.screen == 1:
+            player_speed = 100.0
+            for obj in self.objects:
+                # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
+                if obj is not None and obj.properties['name'] == 'player':
+                    if 'W' in inputs:
+                        obj.properties['position'][1] += player_speed * delta
+                    if 'S' in inputs:
+                        obj.properties['position'][1] -= player_speed * delta
+                    if 'A' in inputs:
+                        obj.properties['position'][0] -= player_speed * delta
+                    if 'D' in inputs:
+                        obj.properties['position'][0] += player_speed * delta
+
+                    # Clamp the player's position to avoid going out of screen bounds
+                    x, y, z = obj.properties['position']
+                    x = max(-470.0, min(470.0, x))
+                    y = max(-450.0, min(440.0, y))
+                    obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
 
             # Move enemies randomly
             for obj in self.objects:
@@ -824,6 +848,24 @@ class Game:
                             self.switch_map()
 
         if self.screen == 2:
+            player_speed = 25.0
+            for obj in self.objects:
+                # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
+                if obj is not None and obj.properties['name'] == 'player':
+                    if 'W' in inputs:
+                        obj.properties['position'][1] += player_speed * delta
+                    if 'S' in inputs:
+                        obj.properties['position'][1] -= player_speed * delta
+                    if 'A' in inputs:
+                        obj.properties['position'][0] -= player_speed * delta
+                    if 'D' in inputs:
+                        obj.properties['position'][0] += player_speed * delta
+
+                    # Clamp the player's position to avoid going out of screen bounds
+                    x, y, z = obj.properties['position']
+                    x = max(-470.0, min(470.0, x))
+                    y = max(-450.0, min(440.0, y))
+                    obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
 
             # Move enemies randomly
             for obj in self.objects:
