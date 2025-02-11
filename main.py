@@ -3,6 +3,8 @@ from utils.window_manager import Window
 from game import Game
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
+import json
+import os
 
 class App:
     def __init__(self, width, height):
@@ -11,6 +13,7 @@ class App:
         self.show_main_menu = True
         imgui.create_context()
         self.impl = GlfwRenderer(self.window.window)
+        self.save_filename = "save_game.json"
 
     def RenderLoop(self):
 
@@ -35,8 +38,23 @@ class App:
             imgui.render()
             self.impl.render(imgui.get_draw_data())
             self.window.EndFrame()
+
+        # If the game is closed without Game Over or Victory, save current progress
+        if not (self.game.is_game_over or self.game.is_game_won):
+            self.save_current_game()
         
         self.window.Close()
+
+
+    def save_current_game(self):
+        data = {
+            "map": self.game.current_map,
+            "lives": self.game.lives,
+            "health": self.game.health,
+            "total_time": self.game.total_time,
+        }
+        with open(self.save_filename, "w") as f:
+            json.dump(data, f)
 
     def show_you_won_screen(self):
         # Center the window
@@ -108,18 +126,19 @@ class App:
 
     def load_game(self):
         self.show_main_menu = False
-        # Load game state from file and initialize the game
-        # Example:
-        # with open('savegame.txt', 'r') as f:
-        #     data = f.read().split(',')
-        #     map_number = int(data[0])
-        #     lives = int(data[1])
-        #     health = int(data[2])
-        #     self.game = Game(self.window.windowHeight, self.window.windowWidth)
-        #     self.game.current_map = map_number
-        #     self.game.lives = lives
-        #     self.game.health = health
-        self.game.InitScreen()
+        # Check if the save file exists
+        if os.path.exists(self.save_filename):
+            with open(self.save_filename, "r") as f:
+                data = json.load(f)
+                # Restore saved values
+                self.game.screen = data["map"]
+                self.game.lives = data["lives"]
+                self.game.health = data["health"]
+                self.game.total_time = data["total_time"]
+            self.game.InitScreen()
+        else:
+            # If no save file, just start a new game or handle gracefully
+            self.start_new_game()
 
 if __name__ == "__main__":
     app = App(1000, 1000)
