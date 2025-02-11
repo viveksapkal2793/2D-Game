@@ -803,16 +803,6 @@ class Game:
                             0.0
                         ], dtype=np.float32)
 
-            # # Move stones if they have a 'speed' property
-            # for obj in self.objects:
-            #     if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
-            #         # Move from top to bottom (or vice versa)
-            #         # print(time)
-            #         obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
-            #         # Reset if out of bounds
-            #         if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
-            #             obj.properties['speed'] = -1 * obj.properties['speed']
-
             # Move stones in a circular orbit around the sun stone
             for obj in self.objects:
                 delta = time['deltaTime']
