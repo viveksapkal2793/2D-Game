@@ -121,13 +121,31 @@ class Game:
         exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
         objs.append(exit_door)
 
+        # Create the sun stone
+        sun_verts, sun_inds = CreateStone(radius=30, color=[1.0, 1.0, 0.0])
+        sun_obj = Object(self.shaders[0], {
+            'name': 'stone',
+            'vertices': np.array(sun_verts, dtype=np.float32),
+            'indices': np.array(sun_inds, dtype=np.uint32),
+            'position': np.array([0, 0, 0], dtype=np.float32),
+            'rotation_z': 0.0,
+            'scale': np.array([1, 1, 1], dtype=np.float32),
+            'speed': 0.0,  # Sun stone is stationary
+            'radius': 30,
+            'is_sun': True,
+            'direction': np.array([0.0, 0.0, 0.0], dtype=np.float32),
+        })
+        stone_objs.append(sun_obj)
+
         # Add random non-overlapping stones
-        for i in range(8):
-            r = 40
-            pos = random_nonoverlapping_position(objs, r, i)
-            if pos is None:
-                # If we can't find a valid spot, just skip or place at a default
-                continue
+        for i in range(6):
+            r = 28
+            angle = random.uniform(0, 2 * np.pi)
+            distance_from_sun = (i + 1) * 62
+            pos = np.array([distance_from_sun * np.cos(angle), distance_from_sun * np.sin(angle), 0], dtype=np.float32)
+            # if pos is None:
+            #     # If we can't find a valid spot, just skip or place at a default
+            #     continue
 
             stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
             stone_obj = Object(self.shaders[0], {
@@ -137,14 +155,20 @@ class Game:
                 'position': pos,
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),
-                'speed': random.uniform(50, 120),
-                'radius': r
+                'speed': random.uniform(0.5, 1.5),
+                'radius': r,
+                'is_sun': False,
+                'direction': np.array([0.0, 0.0, 0.0], dtype=np.float32),
+                'orbit_center': sun_obj.properties['position'],
+                'orbit_radius': distance_from_sun,
+                'orbit_angle': angle
             })
             stone_objs.append(stone_obj)
 
         # Pick exactly three random stones to hold keys
-        if len(stone_objs) >= 3:
-            chosen_stones = random.sample(stone_objs, 3)
+        non_sun_stones = [s for s in stone_objs if not s.properties['is_sun']]
+        if len(non_sun_stones) >= 3:
+            chosen_stones = random.sample(non_sun_stones, 3)
             for s in chosen_stones:
                 key_verts, key_inds = CreateKeyIcon(
                     radius=10,  # small radius for the key
@@ -159,7 +183,12 @@ class Game:
                     'scale': np.array([1, 1, 1], dtype=np.float32),
                     'speed': s.properties['speed'],
                     'has_key': True,  # custom flag to indicate it's a key
-                    'attached_to_player': False
+                    'attached_to_player': False,
+                    'direction': s.properties['direction'].copy(),
+                    'owner_stone': s,
+                    'orbit_center': sun_obj.properties['position'],
+                    'orbit_radius': s.properties['orbit_radius'],
+                    'orbit_angle': s.properties['orbit_angle']
                 })
                 stone_objs.append(key_obj)
 
@@ -774,15 +803,29 @@ class Game:
                             0.0
                         ], dtype=np.float32)
 
-            # Move stones if they have a 'speed' property
+            # # Move stones if they have a 'speed' property
+            # for obj in self.objects:
+            #     if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
+            #         # Move from top to bottom (or vice versa)
+            #         # print(time)
+            #         obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
+            #         # Reset if out of bounds
+            #         if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
+            #             obj.properties['speed'] = -1 * obj.properties['speed']
+
+            # Move stones in a circular orbit around the sun stone
             for obj in self.objects:
-                if obj.properties['name'] == 'stone' or obj.properties['name'] == 'key':
-                    # Move from top to bottom (or vice versa)
-                    # print(time)
-                    obj.properties['position'][1] -= obj.properties['speed'] * time['deltaTime']
-                    # Reset if out of bounds
-                    if obj.properties['position'][1] < -350 or obj.properties['position'][1] > 350:
-                        obj.properties['speed'] = -1 * obj.properties['speed']
+                delta = time['deltaTime']
+                if obj.properties['name'] == 'stone' and not obj.properties['is_sun']:
+                    obj.properties['orbit_angle'] += obj.properties['speed'] * delta
+                    obj.properties['position'][0] = obj.properties['orbit_center'][0] + obj.properties['orbit_radius'] * np.cos(obj.properties['orbit_angle'])
+                    obj.properties['position'][1] = obj.properties['orbit_center'][1] + obj.properties['orbit_radius'] * np.sin(obj.properties['orbit_angle'])
+
+                # If the object is a key, update its position to follow the owner stone
+                if obj.properties['name'] == 'key':
+                    obj.properties['orbit_angle'] += obj.properties['speed'] * delta
+                    obj.properties['position'][0] = obj.properties['orbit_center'][0] + obj.properties['orbit_radius'] * np.cos(obj.properties['orbit_angle'])
+                    obj.properties['position'][1] = obj.properties['orbit_center'][1] + obj.properties['orbit_radius'] * np.sin(obj.properties['orbit_angle'])                   
 
             jump_key = 'SPACE'  
             min_jump = 50.0
@@ -801,7 +844,8 @@ class Game:
             if self.player_on_rock is not None and player_obj:
                 # The rock moves downward => replicate the same shift
                 rock = self.player_on_rock
-                player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+                # player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+                player_obj.properties['position'] = rock.properties['position']
                 
                 # Check if there's a key on this same rock
                 for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
