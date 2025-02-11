@@ -628,7 +628,7 @@ class Game:
             if self.player_on_rock is not None and player_obj:
                 # The rock moves downward => replicate the same shift
                 rock = self.player_on_rock
-                player_obj.properties['position'][1] -= rock.properties['speed'] * delta
+                player_obj.properties['position'] = rock.properties['position'].copy()
                 
                 # Check if there's a key on this same rock
                 for key_obj in (o for o in self.objects if o.properties['name'] == 'key'):
