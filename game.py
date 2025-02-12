@@ -1,6 +1,7 @@
 import imgui
 import numpy as np
 import random
+import os
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
 from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, riverBankProps, riverWaterProps
@@ -109,12 +110,12 @@ class Game:
 
     def create_space_map(self):
 
-        if 'texture_path' in spaceCliffsProps:
+        if 'texture_path' in spaceCliffsProps and os.path.exists(spaceCliffsProps['texture_path']):
             spaceCliffsProps['texture_id'] = LoadTexture(spaceCliffsProps['texture_path'])
             del spaceCliffsProps['texture_path']
         spaceCliffs = Object(self.shaders[0], spaceCliffsProps)
 
-        if 'texture_path' in spaceMiddleProps:
+        if 'texture_path' in spaceMiddleProps and os.path.exists(spaceMiddleProps['texture_path']):
             spaceMiddleProps['texture_id'] = LoadTexture(spaceMiddleProps['texture_path'])
             del spaceMiddleProps['texture_path']
         spaceMiddle = Object(self.shaders[0], spaceMiddleProps)
@@ -148,7 +149,7 @@ class Game:
         })
         stone_objs.append(sun_obj)
 
-        if 'texture_path' in sun_obj.properties:
+        if 'texture_path' in sun_obj.properties and os.path.exists(sun_obj.properties['texture_path']):
             sun_obj.properties['texture_id'] = LoadTexture(sun_obj.properties['texture_path'])
             del sun_obj.properties['texture_path']
 
@@ -183,7 +184,7 @@ class Game:
 
         # Load textures for stones
         for stone in stone_objs:
-            if 'texture_path' in stone.properties:
+            if 'texture_path' in stone.properties and os.path.exists(stone.properties['texture_path']):
                 stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
                 del stone.properties['texture_path']
 
@@ -247,13 +248,13 @@ class Game:
 
     def create_jungle_map(self):
         
-        if 'texture_path' in jungleCliffsProps:
+        if 'texture_path' in jungleCliffsProps and os.path.exists(jungleCliffsProps['texture_path']):
             jungleCliffsProps['texture_id'] = LoadTexture(jungleCliffsProps['texture_path'])
             del jungleCliffsProps['texture_path']
         jungleCliffs = Object(self.shaders[0], jungleCliffsProps)
         
         # Create the grass object - load texture after context is active:
-        if 'texture_path' in jungleGrassProps:
+        if 'texture_path' in jungleGrassProps and os.path.exists(jungleGrassProps['texture_path']):
             jungleGrassProps['texture_id'] = LoadTexture(jungleGrassProps['texture_path'])
             del jungleGrassProps['texture_path']
         jungleGrass = Object(self.shaders[0], jungleGrassProps)
@@ -301,7 +302,7 @@ class Game:
 
         # Load textures for stones
         for stone in stone_objs:
-            if 'texture_path' in stone.properties:
+            if 'texture_path' in stone.properties and os.path.exists(stone.properties['texture_path']):
                 stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
                 del stone.properties['texture_path']
 
@@ -363,12 +364,12 @@ class Game:
 
     def create_river_map(self):
 
-        if 'texture_path' in riverBankProps:
+        if 'texture_path' in riverBankProps and os.path.exists(riverBankProps['texture_path']):
             riverBankProps['texture_id'] = LoadTexture(riverBankProps['texture_path'])
             del riverBankProps['texture_path']
         riverBank = Object(self.shaders[0], riverBankProps)
 
-        if 'texture_path' in riverWaterProps:
+        if 'texture_path' in riverWaterProps and os.path.exists(riverWaterProps['texture_path']):
             riverWaterProps['texture_id'] = LoadTexture(riverWaterProps['texture_path'])
             del riverWaterProps['texture_path']
         riverWater = Object(self.shaders[0], riverWaterProps)
@@ -409,7 +410,7 @@ class Game:
 
         # Load textures for stones
         for stone in stone_objs:
-            if 'texture_path' in stone.properties:
+            if 'texture_path' in stone.properties and os.path.exists(stone.properties['texture_path']):
                 stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
                 del stone.properties['texture_path']
 
