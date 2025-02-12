@@ -226,35 +226,73 @@ backgroundProps = {
     'river_banks': [-400.0, 400.0]
 }
 
+# =========================
+# NEW: Space biome geometry split
+# =========================
 def CreateSpaceBiome():
-    spaceColour = [0.1,0.1,0.1]
-    planetColour = [0.5,0.3,0.7]
-    # Define vertices and indices for forest biome
+    spaceColour = [0.1, 0.1, 0.1]
+    planetColour = [0.5, 0.3, 0.7]
     vertices = [
-        # Define vertices for trees, ground, etc.
+        # Top quad (planet colour)
         500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 1.0,
         500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 0.0,
         -500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 0.0,
         -500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 1.0,
-
+        # Bottom quad (planet colour)
         500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 1.0,
         500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 0.0,
         -500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 0.0,
         -500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 1.0,
-
+        # Middle quad (space colour – this will be textured)
         500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 1.0, 1.0,
         500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 1.0, 0.0,
         -500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 0.0, 0.0,
         -500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 0.0, 1.0,
-        
     ]
     indices = [
-        # Define indices for trees, ground, etc.
-        0,1,2, 0,3,2,
-        8,9,10, 8,11,10,
-        4,5,6, 4,7,6
+        0,1,2, 0,3,2,      # top quad
+        8,9,10, 8,11,10,   # middle quad
+        4,5,6, 4,7,6       # bottom quad
     ]
-    return vertices, indices
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+def CreateSpaceCliffs():
+    # Extract the top & bottom quads (first 8 vertices)
+    full_verts, _ = CreateSpaceBiome()
+    # Each vertex has 8 floats. Get vertices 0-7.
+    cliffs_vertices = full_verts[:8 * 8]
+    # Remapped indices for two quads:
+    cliffs_indices = np.array([0,1,2, 0,3,2, 4,5,6, 4,7,6], dtype=np.uint32)
+    return cliffs_vertices, cliffs_indices
+
+def CreateSpaceMiddle():
+    # Extract the middle quad (vertices 8-11)
+    full_verts, _ = CreateSpaceBiome()
+    middle_vertices = full_verts[8 * 8:]
+    middle_indices = np.array([0,1,2, 0,3,2], dtype=np.uint32)
+    return middle_vertices, middle_indices
+
+# Create property dictionaries for space map:
+spaceCliffsVerts, spaceCliffsInds = CreateSpaceCliffs()
+spaceCliffsProps = {
+    'name': 'space_cliffs',
+    'vertices': np.array(spaceCliffsVerts, dtype=np.float32),
+    'indices': np.array(spaceCliffsInds, dtype=np.uint32),
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32)
+}
+
+spaceMiddleVerts, spaceMiddleInds = CreateSpaceMiddle()
+spaceMiddleProps = {
+    'name': 'space_middle',
+    'vertices': np.array(spaceMiddleVerts, dtype=np.float32),
+    'indices': np.array(spaceMiddleInds, dtype=np.uint32),
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+    'texture_path': "assets/objects/space.jpg"
+}
 
 def CreateJungleBiome():
     """
@@ -400,7 +438,66 @@ def CreateRiverBiome():
         8,9,10, 8,11,10,
         4,5,6, 4,7,6
     ]
-    return vertices, indices
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+def CreateRiverWater():
+    riverColour = [0,0,1]
+    # Define vertices and indices for river water
+    vertices = [
+        # Define vertices for water
+        500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 1.0,
+    ]
+    indices = [
+        # Define indices for water
+        0,1,2, 0,3,2
+    ]
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+def CreateRiverBanks():
+    landColour = [0,1,0]
+    # Define vertices and indices for river banks
+    vertices = [
+        # Define vertices for river banks
+        500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
+        500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
+        -500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
+        -500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
+
+        500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
+        -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
+    ]
+    indices = [
+        # Define indices for river banks
+        0,1,2, 0,3,2,
+        4,5,6, 4,7,6
+    ]
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+riverbankverts, riverbankinds = CreateRiverBanks()
+riverBankProps = {  
+    'name': 'river_banks',
+    'vertices': riverbankverts,
+    'indices': riverbankinds,
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32)
+}
+
+riverwaterverts, riverwaterinds = CreateRiverWater()
+riverWaterProps = {
+    'name': 'river_water',
+    'vertices': riverwaterverts,
+    'indices': riverwaterinds,
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+    'texture_path': "assets/objects/river.jpg"
+}
 
 def CreateStone(radius=15, color=[0.7, 0.7, 0.7], center=[0.0, 0.0, 0.0], points=20):
     

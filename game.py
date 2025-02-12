@@ -3,7 +3,7 @@ import numpy as np
 import random
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture
+from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, riverBankProps, riverWaterProps
 
 def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -108,10 +108,17 @@ class Game:
         })
 
     def create_space_map(self):
-        space = Object(self.shaders[0], spaceProps)
+        
+        spaceCliffs = Object(self.shaders[0], spaceCliffsProps)
+
+        if 'texture_path' in spaceMiddleProps:
+            spaceMiddleProps['texture_id'] = LoadTexture(spaceMiddleProps['texture_path'])
+            del spaceMiddleProps['texture_path']
+        spaceMiddle = Object(self.shaders[0], spaceMiddleProps)
+
         player = Object(self.shaders[0], playerProps)
         player.properties['position'] = np.array([-420, -450, 0], dtype=np.float32)
-        objs =  [space, player]
+        objs =  [spaceMiddle, spaceCliffs, player]
         stone_objs = []
 
         # Add bottom-left entry "door"
@@ -330,10 +337,17 @@ class Game:
         return objs
 
     def create_river_map(self):
-        river = Object(self.shaders[0], riverProps)
+        
+        riverBank = Object(self.shaders[0], riverBankProps)
+
+        if 'texture_path' in riverWaterProps:
+            riverWaterProps['texture_id'] = LoadTexture(riverWaterProps['texture_path'])
+            del riverWaterProps['texture_path']
+        riverWater = Object(self.shaders[0], riverWaterProps)
+
         player = Object(self.shaders[0], playerProps)
         player.properties['position'] = np.array([-420, -450, 0], dtype=np.float32)
-        objs =  [river, player]
+        objs =  [riverBank, riverWater, player]
         stone_objs = []
 
         # Add bottom-left entry "door"
