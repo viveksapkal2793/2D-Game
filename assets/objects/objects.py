@@ -1,4 +1,6 @@
 import numpy as np
+from PIL import Image
+from OpenGL.GL import *
 
 def CreateCircle(center, radius, colour, points = 10, offset = 0, semi = False):
     vertices = [center[0], center[1], center[2], colour[0], colour[1], colour[2]]
@@ -230,20 +232,20 @@ def CreateSpaceBiome():
     # Define vertices and indices for forest biome
     vertices = [
         # Define vertices for trees, ground, etc.
-        500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
-        500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
-        -500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
-        -500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 1.0,
+        500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 0.0,
+        -500.0, 400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 0.0,
+        -500.0, 500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 1.0,
 
-        500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
-        500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
-        -500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
-        -500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2],
+        500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 0.0,
+        -500.0, -500.0, -0.9, planetColour[0], planetColour[1], planetColour[2], 0.0, 1.0,
 
-        500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
-        500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
-        -500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
-        -500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2],
+        500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, spaceColour[0], spaceColour[1], spaceColour[2], 0.0, 1.0,
         
     ]
     indices = [
@@ -255,33 +257,121 @@ def CreateSpaceBiome():
     return vertices, indices
 
 def CreateJungleBiome():
-    cliffColour = [0.5,0.5,0]
-    grasslandColour = [0,1,0]
-    # Define vertices and indices for desert biome
+    """
+    Example with 8 floats per vertex: x, y, z, r, g, b, u, v
+    """
+    cliffColour = [0.5, 0.5, 0.0]
+    grasslandColour = [0.0, 1.0, 0.0]
+
     vertices = [
-        # Define vertices for cacti, sand, etc.
-        500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
-        500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
-        -500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
-        -500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        # Cliff top
+        500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 1.0,
+        500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 0.0,
+        -500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 0.0,
+        -500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 1.0,
 
-        500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
-        500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
-        -500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
-        -500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2],
+        # Cliff bottom
+        500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 0.0,
+        -500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 1.0,
 
-        500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
-        500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
-        -500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
-        -500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2],
+        # Central grass (textured)
+        500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 0.0, 1.0,
     ]
+
     indices = [
-        # Define indices for cacti, sand, etc.
         0,1,2, 0,3,2,
         8,9,10, 8,11,10,
         4,5,6, 4,7,6
     ]
-    return vertices, indices
+
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+
+def CreateJungleCliffs():
+    cliffColour = [0.5, 0.5, 0.0]
+    vertices = [
+        # Top rectangle (without texture coords; 6 floats per vertex)
+        500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 1.0,
+        500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 0.0,
+        -500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 0.0,
+        -500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 1.0,
+        
+        # Bottom rectangle
+        500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 0.0,
+        -500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 1.0,
+    ]
+    indices = [
+        0,1,2, 0,3,2,
+        4,5,6, 4,7,6
+    ]
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+def CreateJungleGrass():
+    grasslandColour = [0.0, 1.0, 0.0]
+    # Middle rectangle with texture coordinates (8 floats per vertex)
+    vertices = [
+        500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 0.0, 1.0,
+    ]
+    indices = [
+        0,1,2, 0,3,2
+    ]
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
+
+cliffsVerts, cliffsInds = CreateJungleCliffs()
+jungleCliffsProps = {
+    'name': 'jungle_cliffs',
+    'vertices': cliffsVerts,
+    'indices': cliffsInds,
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32)
+    # No texture_id
+}
+
+# Grass (middle)
+grassVerts, grassInds = CreateJungleGrass()
+jungleGrassProps = {
+    'name': 'jungle_grass',
+    'vertices': grassVerts,
+    'indices': grassInds,
+    'position': np.array([0, 0, 0], dtype=np.float32),
+    'rotation_z': 0.0,
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+    'texture_path': "assets/objects/grass.jpg"  # store path for deferred loading
+}
+
+
+def LoadTexture(file_path):
+    """
+    Simple texture loader using Pillow + OpenGL.
+    """
+    image = Image.open(file_path).convert("RGBA")
+    img_data = image.tobytes()
+    width, height = image.size
+
+    tex_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, tex_id)
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
+
+    glBindTexture(GL_TEXTURE_2D, 0)
+    print(tex_id)
+    return tex_id
+
 
 def CreateRiverBiome():
     landColour = [0,1,0]
@@ -289,20 +379,20 @@ def CreateRiverBiome():
     # Define vertices and indices for river biome
     vertices = [
         # Define vertices for water, rocks, etc.
-        500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2],
-        500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2],
-        -500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2],
-        -500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2],
+        500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
+        500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
+        -500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
+        -500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
 
-        500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2],
-        500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2],
-        -500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2],
-        -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2],
+        500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
+        -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
 
-        500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
-        500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
-        -500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
-        -500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2],
+        500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 1.0,
     ]
     indices = [
         # Define indices for water, rocks, etc.
@@ -376,6 +466,10 @@ jungleProps = {
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
     'scale': np.array([1, 1, 1], dtype=np.float32),
+
+    # If you have a grass texture in "assets/textures/grass.png"
+    # 'texture_id': LoadTexture("assets/objects/grass.jpg")
+    'texture_path': "assets/objects/grass.jpg" 
 }
 
 riverVerts, riverInds = CreateRiverBiome()

@@ -3,7 +3,7 @@ import numpy as np
 import random
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy
+from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture
 
 def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -224,10 +224,18 @@ class Game:
         return objs
 
     def create_jungle_map(self):
-        jungle = Object(self.shaders[0], jungleProps)
+        # Create the cliffs object without texture:
+        jungleCliffs = Object(self.shaders[0], jungleCliffsProps)
+        
+        # Create the grass object - load texture after context is active:
+        if 'texture_path' in jungleGrassProps:
+            jungleGrassProps['texture_id'] = LoadTexture(jungleGrassProps['texture_path'])
+            del jungleGrassProps['texture_path']
+        jungleGrass = Object(self.shaders[0], jungleGrassProps)
+        
         player = Object(self.shaders[0], playerProps)
         player.properties['position'] = np.array([-420, -450, 0], dtype=np.float32)
-        objs =  [jungle, player]
+        objs =  [jungleCliffs, jungleGrass, player]
         stone_objs = []
 
         # Add bottom-left entry "door"
