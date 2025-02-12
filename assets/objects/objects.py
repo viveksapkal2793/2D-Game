@@ -487,7 +487,7 @@ riverBankProps = {
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
     'scale': np.array([1, 1, 1], dtype=np.float32),
-    'texture_path': "assets/objects/riverbank.jpg"
+    'texture_path': "assets/objects/beach.jpeg"
 }
 
 riverwaterverts, riverwaterinds = CreateRiverWater()
@@ -498,7 +498,7 @@ riverWaterProps = {
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
     'scale': np.array([1, 1, 1], dtype=np.float32),
-    'texture_path': "assets/objects/river.jpg"
+    'texture_path': "assets/objects/river.jpeg"
 }
 
 def CreateStone(radius=15, color=[0.7, 0.7, 0.7], center=[0.0, 0.0, 0.0], points=20):
