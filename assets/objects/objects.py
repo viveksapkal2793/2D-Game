@@ -503,10 +503,19 @@ riverWaterProps = {
 
 def CreateStone(radius=15, color=[0.7, 0.7, 0.7], center=[0.0, 0.0, 0.0], points=20):
     
-    # center = [np.random.uniform(-380, 380), np.random.uniform(-380, 380), 0]
-    # Create a circular stone mesh using your existing CreateCircle function
-    verts, inds = CreateCircle(center, radius, color, points)
-    return verts, inds
+    vertices = []
+    indices = []
+    for i in range(points):
+        angle = 2 * np.pi * i / points
+        x = center[0] + radius * np.cos(angle)
+        y = center[1] + radius * np.sin(angle)
+        u = (np.cos(angle) + 1) / 2  # Texture coordinate u
+        v = (np.sin(angle) + 1) / 2  # Texture coordinate v
+        vertices.extend([x, y, center[2], color[0], color[1], color[2], u, v])
+        indices.extend([0, i + 1, (i + 1) % points + 1])
+    # Center vertex
+    vertices.extend([center[0], center[1], center[2], color[0], color[1], color[2], 0.5, 0.5])
+    return vertices, indices
 
 def CreateKeyIcon(radius=5, color=[1.0, 1.0, 0.0], points=12):
     """

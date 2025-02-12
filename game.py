@@ -144,8 +144,13 @@ class Game:
             'radius': 30,
             'is_sun': True,
             'direction': np.array([0.0, 0.0, 0.0], dtype=np.float32),
+            'texture_path': "assets/objects/sun.jpg"
         })
         stone_objs.append(sun_obj)
+
+        if 'texture_path' in sun_obj.properties:
+            sun_obj.properties['texture_id'] = LoadTexture(sun_obj.properties['texture_path'])
+            del sun_obj.properties['texture_path']
 
         # Add random non-overlapping stones
         for i in range(6):
@@ -171,9 +176,16 @@ class Game:
                 'direction': np.array([0.0, 0.0, 0.0], dtype=np.float32),
                 'orbit_center': sun_obj.properties['position'],
                 'orbit_radius': distance_from_sun,
-                'orbit_angle': angle
+                'orbit_angle': angle,
+                'texture_path': f"assets/objects/planet{i}.jpg"
             })
             stone_objs.append(stone_obj)
+
+        # Load textures for stones
+        for stone in stone_objs:
+            if 'texture_path' in stone.properties:
+                stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
+                del stone.properties['texture_path']
 
         # Pick exactly three random stones to hold keys
         non_sun_stones = [s for s in stone_objs if not s.properties['is_sun']]
@@ -282,9 +294,16 @@ class Game:
                     0.0
                 ], dtype=np.float32),
                 'carries_key': False,
-                'key_obj': None
+                'key_obj': None,
+                'texture_path': "assets/objects/elephant.jpg"
             })
             stone_objs.append(stone_obj)
+
+        # Load textures for stones
+        for stone in stone_objs:
+            if 'texture_path' in stone.properties:
+                stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
+                del stone.properties['texture_path']
 
         # Pick exactly three random stones to hold keys
         if len(stone_objs) >= 3:
@@ -383,9 +402,16 @@ class Game:
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),
                 'speed': random.uniform(50, 120),
-                'radius': r
+                'radius': r,
+                'texture_path': "assets/objects/stone.jpg"
             })
             stone_objs.append(stone_obj)
+
+        # Load textures for stones
+        for stone in stone_objs:
+            if 'texture_path' in stone.properties:
+                stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
+                del stone.properties['texture_path']
 
         # Pick exactly three random stones to hold keys
         if len(stone_objs) >= 3:
