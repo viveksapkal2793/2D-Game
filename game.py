@@ -108,7 +108,10 @@ class Game:
         })
 
     def create_space_map(self):
-        
+
+        if 'texture_path' in spaceCliffsProps:
+            spaceCliffsProps['texture_id'] = LoadTexture(spaceCliffsProps['texture_path'])
+            del spaceCliffsProps['texture_path']
         spaceCliffs = Object(self.shaders[0], spaceCliffsProps)
 
         if 'texture_path' in spaceMiddleProps:
@@ -231,7 +234,10 @@ class Game:
         return objs
 
     def create_jungle_map(self):
-        # Create the cliffs object without texture:
+        
+        if 'texture_path' in jungleCliffsProps:
+            jungleCliffsProps['texture_id'] = LoadTexture(jungleCliffsProps['texture_path'])
+            del jungleCliffsProps['texture_path']
         jungleCliffs = Object(self.shaders[0], jungleCliffsProps)
         
         # Create the grass object - load texture after context is active:
@@ -337,7 +343,10 @@ class Game:
         return objs
 
     def create_river_map(self):
-        
+
+        if 'texture_path' in riverBankProps:
+            riverBankProps['texture_id'] = LoadTexture(riverBankProps['texture_path'])
+            del riverBankProps['texture_path']
         riverBank = Object(self.shaders[0], riverBankProps)
 
         if 'texture_path' in riverWaterProps:

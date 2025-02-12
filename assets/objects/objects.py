@@ -280,7 +280,8 @@ spaceCliffsProps = {
     'indices': np.array(spaceCliffsInds, dtype=np.uint32),
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
-    'scale': np.array([1, 1, 1], dtype=np.float32)
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+    'texture_path': "assets/objects/planet.jpg"
 }
 
 spaceMiddleVerts, spaceMiddleInds = CreateSpaceMiddle()
@@ -373,8 +374,8 @@ jungleCliffsProps = {
     'indices': cliffsInds,
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
-    'scale': np.array([1, 1, 1], dtype=np.float32)
-    # No texture_id
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+    'texture_path': "assets/objects/cliff.jpg"
 }
 
 # Grass (middle)
@@ -407,7 +408,7 @@ def LoadTexture(file_path):
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
 
     glBindTexture(GL_TEXTURE_2D, 0)
-    print(tex_id)
+    # print(tex_id)
     return tex_id
 
 
@@ -485,7 +486,8 @@ riverBankProps = {
     'indices': riverbankinds,
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
-    'scale': np.array([1, 1, 1], dtype=np.float32)
+    'scale': np.array([1, 1, 1], dtype=np.float32),
+    'texture_path': "assets/objects/riverbank.jpg"
 }
 
 riverwaterverts, riverwaterinds = CreateRiverWater()
