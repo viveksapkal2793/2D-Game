@@ -23,6 +23,10 @@ This is a 2D game where the player navigates through three different maps: Jungl
 
 - In the space map, enemies are UFOs and moving platforms are planets revolving around sun. You can jump from one planet to another or move around freely in space (very slow speed) while avoiding randomly moving enemies and collecting keys to complete the game. Falling into the sun will make the health 0.
 
+- git repository link:
+```
+https://github.com/viveksapkal2793/2D-Game
+```
 
 #### **Features**
 - Three unique maps: Jungle, Beach, and Space.
@@ -45,7 +49,7 @@ Pillow
 
 - Clone the repository or download the zip file:
 ```
-git clone https://github.com/yourusername/2D-Game.git
+git clone https://github.com/viveksapkal2793/2D-Game.git
 cd 2D-Game
 ```
 
