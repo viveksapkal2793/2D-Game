@@ -15,7 +15,14 @@ A 2-dimensional game built using PyOpenGL only, including three levels and corre
 - Screenshots and Texture Info
 
 #### **Introduction**
-This is a 2D game where the player navigates through three different maps: Jungle, Beach, and Space. The player must collect keys and avoid enemies to progress through the levels.
+This is a 2D game where the player navigates through three different maps: Jungle, Beach, and Space. The player must collect all the keys and avoid enemies to progress through the levels.
+
+- In the Jungle Map, enemies are hunters and moving platforms are safari cars moving randomly across the map. Ride the safari cars or move around freely while avoiding enemies.
+
+- In the Beach Map, enemies are pirate boats and moving platforms are friendly boats moving to and fro from top beach to bottom beach. Ride the boats by jumping from one to another while collecting keys to progress to next level. Falling in water reduces the health rapidly.
+
+- In the space map, enemies are UFOs and moving platforms are planets revolving around sun. You can jump from one planet to another or move around freely in space (very slow speed) while avoiding randomly moving enemies and collecting keys to complete the game. Falling into the sun will make the health 0.
+
 
 #### **Features**
 - Three unique maps: Jungle, Beach, and Space.
