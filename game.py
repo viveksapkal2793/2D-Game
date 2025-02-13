@@ -506,7 +506,7 @@ class Game:
             self.DrawText()
             self.UpdateScene(inputs, time)
             self.DrawScene()
-            self.show_switch_map_button()
+            # self.show_switch_map_button()
         if self.screen == 1:
             self.DrawText()
             self.UpdateScene(inputs, time)

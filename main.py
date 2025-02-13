@@ -31,7 +31,7 @@ class App:
                     self.show_you_won_screen()
                 else:
                     self.game.ProcessFrame(inputs, time)
-                    self.game.show_switch_map_button()
+                    # self.game.show_switch_map_button()
             else:
                 self.show_main_menu_screen(inputs)
 
