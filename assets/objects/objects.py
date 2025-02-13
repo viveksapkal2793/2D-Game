@@ -86,7 +86,7 @@ def CreateSpaceEnemy(base_radius=30, ellipse_radius_x=40, ellipse_radius_y=20, s
     and three small circles on top of the ellipse.
     """
     # Define vertices for the full circle (bottom part)
-    vertices, indices = CreateCircle([0.0, 0.0, 0.0], base_radius, color1, 20)
+    vertices, indices = CreateCircle([0.0, 0.0, 0.01], base_radius, color1, 20)
 
     # Define vertices for the horizontal ellipse (middle part)
     ellipse_verts, ellipse_inds = CreateEllipse([0.0, -7.0, 0.1], ellipse_radius_x, ellipse_radius_y, color2, 20, len(vertices)/6)
@@ -114,7 +114,7 @@ def CreateSpaceEnemy(base_radius=30, ellipse_radius_x=40, ellipse_radius_y=20, s
 
 def CreateJungleEnemy():
 
-    vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
+    vertices, indices = CreateCircle([0.0, 0.0, 0.04], 1.0, [130/255, 100/255, 100/255], 50, 0)
 
     eye_verts1, eye_inds1 = CreateCircle([0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
     vertices += eye_verts1
@@ -124,19 +124,27 @@ def CreateJungleEnemy():
     vertices += eye_verts2
     indices += eye_inds2
 
-    eye_verts3, eye_inds3 = CreateCircle([-0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    eye_verts3, eye_inds3 = CreateCircle([-0.4, -0.5, 0.10], 0.12, [1,0,0], 10, len(vertices)/6)
     vertices += eye_verts3
     indices += eye_inds3
 
-    eye_verts4, eye_inds4 = CreateCircle([0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
+    eye_verts4, eye_inds4 = CreateCircle([0.4, -0.5, 0.10], 0.12, [1,0,0], 10, len(vertices)/6)
     vertices += eye_verts4
     indices += eye_inds4
 
-    eye_verts5, eye_inds5 = CreateCircle([0.0, 0.0, 0.2], 1.0, [1,0,0], 25, len(vertices)/6, True)
+    eye_verts5, eye_inds5 = CreateCircle([0.0, 0.0, 0.2], 1.0, [0.1,0.5,0.5], 25, len(vertices)/6, True)
     vertices += eye_verts5
     indices += eye_inds5
 
-    eye_verts6, eye_inds6 = CreateCircle([0.0, 0.95, 0.3], 0.3, [0.9,0.9,0.9], 20, len(vertices)/6)
+    eye_verts6, eye_inds6 = CreateCircle([0.0, 0.95, 0.3], 0.3, [0.9,0.2,0.2], 20, len(vertices)/6)
+    vertices += eye_verts6
+    indices += eye_inds6
+
+    eye_verts6, eye_inds6 = CreateCircle([-0.9, 0.55, 0.3], 0.3, [0.9,0.2,0.2], 20, len(vertices)/6)
+    vertices += eye_verts6
+    indices += eye_inds6
+
+    eye_verts6, eye_inds6 = CreateCircle([0.9, 0.55, 0.3], 0.3, [0.9,0.2,0.2], 20, len(vertices)/6)
     vertices += eye_verts6
     indices += eye_inds6
 
@@ -144,7 +152,7 @@ def CreateJungleEnemy():
 
 def CreatebeachEnemy():
 
-    vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
+    vertices, indices = CreateCircle([0.0, 0.0, 0.01], 1.0, [180/255, 224/255, 150/255], 50, 0)
 
     eye_verts1, eye_inds1 = CreateCircle([0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
     vertices += eye_verts1
