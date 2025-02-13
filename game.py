@@ -225,11 +225,11 @@ class Game:
                 continue
             enemy_obj = Object(self.shaders[0], {
                 'name': 'enemy',
-                'vertices': np.array(enemy_verts, dtype=np.float32),
-                'indices': np.array(enemy_inds, dtype=np.uint32),
+                'vertices': enemy_verts,
+                'indices': enemy_inds,
                 'position': pos,
                 'rotation_z': 0.0,
-                'scale': np.array([30, 30, 1], dtype=np.float32),  # Similar to player
+                'scale': np.array([1, 1, 1], dtype=np.float32),  
                 'speed': random.uniform(40, 90),  # Random speed
                 'radius': enemy_radius,
                 # direction: random normalized direction

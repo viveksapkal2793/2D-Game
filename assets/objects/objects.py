@@ -37,6 +37,19 @@ def CreateCircle(center, radius, colour, points = 10, offset = 0, semi = False):
 
     return (vertices, indices)    
 
+def CreateEllipse(center, radius_x, radius_y, color, points=20, offset=0):
+    vertices = [center[0], center[1], center[2], color[0], color[1], color[2]]
+    indices = []
+    for i in range(points):
+        angle = 2 * np.pi * i / points
+        x = center[0] + radius_x * np.cos(angle)
+        y = center[1] + radius_y * np.sin(angle)
+        vertices.extend([x, y, center[2], color[0], color[1], color[2]])
+        ind1 = i + 1
+        ind2 = i + 2 if i != points - 1 else 1
+        indices.extend([0 + offset, ind1 + offset, ind2 + offset])
+    return vertices, indices
+
 def CreatePlayer():
 
     vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [220/255, 183/255, 139/255], 50, 0)
@@ -67,35 +80,37 @@ def CreatePlayer():
 
     return vertices, indices
 
-def CreateSpaceEnemy():
+def CreateSpaceEnemy(base_radius=30, ellipse_radius_x=40, ellipse_radius_y=20, small_circle_radius=5, color1=[0.8, 0.3, 0.3], color2=[0.9, 0.9, 0.4], color3=[0.8, 0.0, 0.8]):
+    """
+    Creates a UFO shape with a full circle at the bottom, a horizontal ellipse above it,
+    and three small circles on top of the ellipse.
+    """
+    # Define vertices for the full circle (bottom part)
+    vertices, indices = CreateCircle([0.0, 0.0, 0.0], base_radius, color1, 20)
 
-    vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
+    # Define vertices for the horizontal ellipse (middle part)
+    ellipse_verts, ellipse_inds = CreateEllipse([0.0, -7.0, 0.1], ellipse_radius_x, ellipse_radius_y, color2, 20, len(vertices)/6)
+    vertices += ellipse_verts
+    indices += ellipse_inds
 
-    eye_verts1, eye_inds1 = CreateCircle([0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
-    vertices += eye_verts1
-    indices += eye_inds1
+    # Define vertices for the three small circles on top of the ellipse
+    small_circle_verts1, small_circle_inds1 = CreateCircle([-ellipse_radius_x / 2, -7.0, 0.2], small_circle_radius, color3, 10, len(vertices)/6)
+    vertices += small_circle_verts1
+    indices += small_circle_inds1
 
-    eye_verts2, eye_inds2 = CreateCircle([-0.4, -0.5, 0.05], 0.3, [1,1,1], 20, len(vertices)/6)
-    vertices += eye_verts2
-    indices += eye_inds2
+    small_circle_verts2, small_circle_inds2 = CreateCircle([0.0, -7.0, 0.2], small_circle_radius, color3, 10, len(vertices)/6)
+    vertices += small_circle_verts2
+    indices += small_circle_inds2
 
-    eye_verts3, eye_inds3 = CreateCircle([-0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
-    vertices += eye_verts3
-    indices += eye_inds3
+    small_circle_verts3, small_circle_inds3 = CreateCircle([ellipse_radius_x / 2, -7.0, 0.2], small_circle_radius, color3, 10, len(vertices)/6)
+    vertices += small_circle_verts3
+    indices += small_circle_inds3
 
-    eye_verts4, eye_inds4 = CreateCircle([0.4, -0.5, 0.10], 0.12, [0,1,0], 10, len(vertices)/6)
-    vertices += eye_verts4
-    indices += eye_inds4
+    # # Combine all vertices and indices
+    # vertices = circle_verts + ellipse_verts + small_circle_verts1 + small_circle_verts2 + small_circle_verts3
+    # indices = circle_inds + ellipse_inds + small_circle_inds1 + small_circle_inds2 + small_circle_inds3
 
-    eye_verts5, eye_inds5 = CreateCircle([0.0, 0.0, 0.2], 1.0, [1,0,0], 25, len(vertices)/6, True)
-    vertices += eye_verts5
-    indices += eye_inds5
-
-    eye_verts6, eye_inds6 = CreateCircle([0.0, 0.95, 0.3], 0.3, [0.9,0.9,0.9], 20, len(vertices)/6)
-    vertices += eye_verts6
-    indices += eye_inds6
-
-    return vertices, indices
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
 def CreateJungleEnemy():
 
