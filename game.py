@@ -4,7 +4,7 @@ import random
 import os
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, spaceProps, jungleProps, riverProps, CreateStone, CreateKeyIcon, CreatePlayer, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, riverBankProps, riverWaterProps
+from assets.objects.objects import playerProps, CreateStone, CreateKeyIcon, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, riverBankProps, riverWaterProps, CreateBoat
 
 def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -394,17 +394,17 @@ class Game:
                 # If we can't find a valid spot, just skip or place at a default
                 continue
 
-            stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
+            riverBoatVerts, riverBoatInds = CreateBoat(color1=[0.8, 0.8, 0.9], color2=[0.2, 0.7, 0.4])
             stone_obj = Object(self.shaders[0], {
                 'name': 'stone',
-                'vertices': np.array(stone_verts, dtype=np.float32),
-                'indices': np.array(stone_inds, dtype=np.uint32),
+                'vertices': riverBoatVerts,
+                'indices': riverBoatInds,
                 'position': pos,
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),
                 'speed': random.uniform(50, 120),
                 'radius': r,
-                'texture_path': "assets/objects/stone.jpg"
+                # 'texture_path': "assets/objects/stone.jpg"
             })
             stone_objs.append(stone_obj)
 
@@ -438,7 +438,7 @@ class Game:
         # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
         enemy_objs = []
         for i in range(3):
-            enemy_verts, enemy_inds = CreateRiverEnemy()
+            enemy_verts, enemy_inds = CreateBoat(color1=[0.2, 0.2, 0.2], color2=[0.8, 0.45, 0.5])
             enemy_radius = 25
             pos = random_enemy_position(enemy_objs, enemy_radius)
             if pos is None:
@@ -449,7 +449,7 @@ class Game:
                 'indices': np.array(enemy_inds, dtype=np.uint32),
                 'position': pos,
                 'rotation_z': 0.0,
-                'scale': np.array([30, 30, 1], dtype=np.float32),  # Similar to player
+                'scale': np.array([1, 1, 1], dtype=np.float32),  # Similar to player
                 'speed': random.uniform(40, 90),  # Random speed
                 'radius': enemy_radius,
                 # direction: random normalized direction

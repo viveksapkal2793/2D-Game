@@ -525,6 +525,39 @@ def CreateKeyIcon(radius=5, color=[1.0, 1.0, 0.0], points=12):
     verts, inds = CreateCircle([0.0, 0.0, 0.0], radius, color, points)
     return verts, inds
 
+def CreateBoat(base_width=80, top_width=40, height=60, color1=[0.7, 0.7, 0.7], color2=[0.5, 0.5, 0.5]):
+    """
+    Creates a boat shape with a trapezium at the bottom and a triangle above it.
+    """
+    half_base_width = base_width / 2
+    half_top_width = top_width / 2
+    half_height = height / 2
+
+    # Define vertices for the trapezium (bottom part)
+    vertices = [
+        # Bottom trapezium
+        -half_top_width, -half_height, 0.0, color1[0], color1[1], color1[2], 0.0, 0.0,  # Bottom left
+        half_top_width, -half_height, 0.0, color1[0], color1[1], color1[2], 1.0, 0.0,   # Bottom right
+        half_base_width, 0.0, 0.0, color1[0], color1[1], color1[2], 1.0, 1.0,             # Top right
+        -half_base_width, 0.0, 0.0, color1[0], color1[1], color1[2], 0.0, 1.0,            # Top left
+    ]
+
+    # Define vertices for the triangle (top part)
+    vertices += [
+        # Top triangle
+        -half_top_width, 0.0, 0.0, color2[0], color2[1], color2[2], 0.0, 0.0,            # Bottom left
+        half_top_width, 0.0, 0.0, color2[0], color2[1], color2[2], 1.0, 0.0,             # Bottom right
+        0.0, half_height, 0.0, color2[0], color2[1], color2[2], 0.5, 1.0,                # Top center
+    ]
+
+    # Define indices for the trapezium and triangle
+    indices = [
+        0, 1, 2, 0, 2, 3,  # Trapezium
+        4, 5, 6             # Triangle
+    ]
+
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
 def CreateHeartIcon(radius=8, color=[1.0, 0.0, 0.0]):
     """
     Creates a simple heart shape using two circles plus a triangle-like shape.
