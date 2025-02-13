@@ -16,7 +16,7 @@ class Window:
         # Create a window using glfw
         self.windowHeight = height
         self.windowWidth = width
-        self.window = glfw.create_window(width, height,"2D Game", None, None)
+        self.window = glfw.create_window(width, height,"2D Game (Vivek Sapkal B22AI066)", None, None)
 
         if not self.window:
             glfw.terminate()
