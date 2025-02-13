@@ -2,6 +2,26 @@ import numpy as np
 from PIL import Image
 from OpenGL.GL import *
 
+def LoadTexture(file_path):
+    """
+    Simple texture loader using Pillow + OpenGL.
+    """
+    image = Image.open(file_path).convert("RGBA")
+    img_data = image.tobytes()
+    width, height = image.size
+
+    tex_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, tex_id)
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
+
+    glBindTexture(GL_TEXTURE_2D, 0)
+    # print(tex_id)
+    return tex_id
+
 def CreateCircle(center, radius, colour, points = 10, offset = 0, semi = False):
     vertices = [center[0], center[1], center[2], colour[0], colour[1], colour[2]]
     indices = []
@@ -180,35 +200,6 @@ def CreatebeachEnemy():
 
     return vertices, indices
 
-def CreateBackground():
-    grassColour = [0,1,0]
-    waterColour = [0,0,1]
-
-    vertices = [
-        -500.0, 500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-        -400.0, 500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-        -400.0, -500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-        -500.0, -500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-
-        500.0, 500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-        400.0, 500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-        400.0, -500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-        500.0, -500.0, -0.9, grassColour[0], grassColour[1], grassColour[2],
-
-        -400.0, 500.0, -0.9, waterColour[0], waterColour[1], waterColour[2],
-        400.0, 500.0, -0.9, waterColour[0], waterColour[1], waterColour[2],
-        400.0, -500.0, -0.9, waterColour[0], waterColour[1], waterColour[2],
-        -400.0, -500.0, -0.9, waterColour[0], waterColour[1], waterColour[2],
-    ]
-
-    indices = [
-        0,1,2, 0,3,2,
-        8,9,10, 8,11,10,
-        4,5,6, 4,7,6
-    ]
-
-    return vertices, indices
-
 playerVerts, playerInds = CreatePlayer()
 playerProps = {
     'name': 'player',
@@ -230,28 +221,6 @@ playerProps = {
     'radius': 25
 }
 
-backgroundVerts, backgroundInds = CreateBackground()
-backgroundProps = {
-    'name': 'background',
-
-    'vertices' : np.array(backgroundVerts, dtype = np.float32),
-    
-    'indices' : np.array(backgroundInds, dtype = np.uint32),
-
-    'position' : np.array([0, 0, 0], dtype = np.float32),
-
-    'rotation_z' : 0.0,
-
-    'scale' : np.array([1, 1, 1], dtype = np.float32),
-
-    'boundary' : [500.0, -500.0, 500.0, 500.0],
-
-    'beach_banks': [-400.0, 400.0]
-}
-
-# =========================
-# NEW: Space biome geometry split
-# =========================
 def CreateSpaceBiome():
     spaceColour = [0.1, 0.1, 0.1]
     planetColour = [0.5, 0.3, 0.7]
@@ -318,42 +287,6 @@ spaceMiddleProps = {
     'texture_path': "assets/objects/space.jpg"
 }
 
-def CreateJungleBiome():
-    """
-    Example with 8 floats per vertex: x, y, z, r, g, b, u, v
-    """
-    cliffColour = [0.5, 0.5, 0.0]
-    grasslandColour = [0.0, 1.0, 0.0]
-
-    vertices = [
-        # Cliff top
-        500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 1.0,
-        500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 0.0,
-        -500.0, 400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 0.0,
-        -500.0, 500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 1.0,
-
-        # Cliff bottom
-        500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 1.0,
-        500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 1.0, 0.0,
-        -500.0, -400.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 0.0,
-        -500.0, -500.0, -0.9, cliffColour[0], cliffColour[1], cliffColour[2], 0.0, 1.0,
-
-        # Central grass (textured)
-        500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 1.0, 1.0,
-        500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 1.0, 0.0,
-        -500.0, -400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 0.0, 0.0,
-        -500.0, 400.0, -0.9, grasslandColour[0], grasslandColour[1], grasslandColour[2], 0.0, 1.0,
-    ]
-
-    indices = [
-        0,1,2, 0,3,2,
-        8,9,10, 8,11,10,
-        4,5,6, 4,7,6
-    ]
-
-    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
-
-
 def CreateJungleCliffs():
     cliffColour = [0.5, 0.5, 0.0]
     vertices = [
@@ -412,57 +345,6 @@ jungleGrassProps = {
     'scale': np.array([1, 1, 1], dtype=np.float32),
     'texture_path': "assets/objects/grass.jpg"  # store path for deferred loading
 }
-
-
-def LoadTexture(file_path):
-    """
-    Simple texture loader using Pillow + OpenGL.
-    """
-    image = Image.open(file_path).convert("RGBA")
-    img_data = image.tobytes()
-    width, height = image.size
-
-    tex_id = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, tex_id)
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
-
-    glBindTexture(GL_TEXTURE_2D, 0)
-    # print(tex_id)
-    return tex_id
-
-
-def CreatebeachBiome():
-    landColour = [0,1,0]
-    beachColour = [0,0,1]
-    # Define vertices and indices for beach biome
-    vertices = [
-        # Define vertices for water, rocks, etc.
-        500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
-        500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
-        -500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
-        -500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
-
-        500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
-        500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
-        -500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
-        -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
-
-        500.0, 400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 1.0, 1.0,
-        500.0, -400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 1.0, 0.0,
-        -500.0, -400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 0.0, 0.0,
-        -500.0, 400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 0.0, 1.0,
-    ]
-    indices = [
-        # Define indices for water, rocks, etc.
-        0,1,2, 0,3,2,
-        8,9,10, 8,11,10,
-        4,5,6, 4,7,6
-    ]
-    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
 def CreatebeachWater():
     beachColour = [0,0,1]
@@ -614,7 +496,6 @@ def CreateSafariCar(bonnet_width=30, car_width=60, height=40, wheel_radius=5, co
         4, 5, 6, 4, 6, 7   # Car body
     ]
 
-
     # Define vertices for the windows (small squares)
     window_size = 5
     window_verts1 = [
@@ -627,79 +508,4 @@ def CreateSafariCar(bonnet_width=30, car_width=60, height=40, wheel_radius=5, co
     vertices += window_verts1
     indices += window_inds1
 
-    # window_verts2 = [
-    #     0, 0, 0.2, window_color[0], window_color[1], window_color[2], 0.0, 0.0,  # Bottom left
-    #     5, 0, 0.2, window_color[0], window_color[1], window_color[2], 1.0, 0.0,  # Bottom right
-    #     5, 5, 0.2, window_color[0], window_color[1], window_color[2], 1.0, 1.0,   # Top right
-    #     0, 5, 0.2, window_color[0], window_color[1], window_color[2], 0.0, 1.0,   # Top left
-    # ]
-    # window_inds2 = [len(vertices) // 8, len(vertices) // 8 + 1, len(vertices) // 8 + 2, len(vertices) // 8, len(vertices) // 8 + 2, len(vertices) // 8 + 3]
-    # vertices += window_verts2
-    # indices += window_inds2
-
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
-
-def CreateHeartIcon(radius=8, color=[1.0, 0.0, 0.0]):
-    """
-    Creates a simple heart shape using two circles plus a triangle-like shape.
-    You can tweak points for a more detailed heart.
-    """
-    # Left circle
-    left_circle_verts, left_circle_inds = CreateCircle([-0.5, 0.0, 1.0], radius, color, 16, 0)
-    # Right circle (shift x by +0.5 so it joins the left circle)
-    right_circle_verts, right_circle_inds = CreateCircle([0.5, 0.0, 1.0], radius, color, 16, len(left_circle_verts)//6)
-    
-    # Triangle portion (approx)
-    triangle_verts = [
-        0.0, -1.0*radius, 1.0, color[0], color[1], color[2],
-        -1.0*radius, 0.0, 1.0, color[0], color[1], color[2],
-        1.0*radius, 0.0, 1.0, color[0], color[1], color[2],
-    ]
-    triangle_inds = [0,1,2]
-    # Adjust the triangle indices offset
-    tri_offset = (len(left_circle_verts) + len(right_circle_verts)) // 6
-
-    # Combine everything
-    verts = left_circle_verts + right_circle_verts + triangle_verts
-    inds = left_circle_inds + right_circle_inds + [
-        triangle_inds[0] + tri_offset,
-        triangle_inds[1] + tri_offset,
-        triangle_inds[2] + tri_offset
-    ]
-    return verts, inds
-
-
-# Example properties for biomes
-spaceVerts, spaceInds = CreateSpaceBiome()
-spaceProps = {
-    'name': 'spacemap',
-    'vertices': np.array(spaceVerts, dtype=np.float32),
-    'indices': np.array(spaceInds, dtype=np.uint32),
-    'position': np.array([0, 0, 0], dtype=np.float32),
-    'rotation_z': 0.0,
-    'scale': np.array([1, 1, 1], dtype=np.float32),
-}
-
-jungleVerts, jungleInds = CreateJungleBiome()
-jungleProps = {
-    'name': 'junglemap',
-    'vertices': np.array(jungleVerts, dtype=np.float32),
-    'indices': np.array(jungleInds, dtype=np.uint32),
-    'position': np.array([0, 0, 0], dtype=np.float32),
-    'rotation_z': 0.0,
-    'scale': np.array([1, 1, 1], dtype=np.float32),
-
-    # If you have a grass texture in "assets/textures/grass.png"
-    # 'texture_id': LoadTexture("assets/objects/grass.jpg")
-    'texture_path': "assets/objects/grass.jpg" 
-}
-
-beachVerts, beachInds = CreatebeachBiome()
-beachProps = {
-    'name': 'beachmap',
-    'vertices': np.array(beachVerts, dtype=np.float32),
-    'indices': np.array(beachInds, dtype=np.uint32),
-    'position': np.array([0, 0, 0], dtype=np.float32),
-    'rotation_z': 0.0,
-    'scale': np.array([1, 1, 1], dtype=np.float32),
-}

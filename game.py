@@ -15,14 +15,11 @@ def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stone
     interval_width = (total_width - 200) / number_of_stones
 
     for _ in range(max_attempts):
-        # Pick one of the intervals at random
-        # i = random.randint(0, number_of_stones - 1)
+
         x_start = screen_left + i * (interval_width + 30)
         x_end = x_start + interval_width - 10
 
-        # Sample a random x within that interval
         x = random.uniform(x_start, x_end)
-        # Sample y normally
         y = random.uniform(-300, 300)
         center = np.array([x, y, 0], dtype=np.float32)
 
@@ -73,7 +70,6 @@ class Game:
         self.objects = []
         self.maps = [self.create_jungle_map(), self.create_beach_map(), self.create_space_map()]
         self.current_map = 0
-        # self.player = Object(self.shaders[0], playerProps)
         self.player_on_rock = None
         self.jump_charge_time = 0.0
         self.health = 100
@@ -92,8 +88,6 @@ class Game:
 
     def CreateDoorObject(self, name: str, position: np.ndarray, radius: float=40.0, texture_path: str=None):
         """Creates a simple rectangular or circular 'door' object."""
-        # If you have a custom function to create geometry, use it here
-        # For simplicity, let's re-use a circle from CreateStone
         
         verts, inds = CreateStone(radius=radius, color=[0.7, 0.2, 0.2])
         return Object(self.shaders[0], {
@@ -103,9 +97,9 @@ class Game:
             'position': position,
             'rotation_z': 0.0,
             'scale': np.array([1, 1, 1], dtype=np.float32),
-            'speed': 0.0,               # Doors are stationary
-            'radius': radius,           # For distance checks
-            'attached_to_player': False, # Not used, but included for consistency
+            'speed': 0.0,            
+            'radius': radius,       
+            'attached_to_player': False, 
             'texture_path': texture_path
         })
 
@@ -167,9 +161,6 @@ class Game:
             angle = random.uniform(0, 2 * np.pi)
             distance_from_sun = (i + 1) * 62
             pos = np.array([distance_from_sun * np.cos(angle), distance_from_sun * np.sin(angle), 0], dtype=np.float32)
-            # if pos is None:
-            #     # If we can't find a valid spot, just skip or place at a default
-            #     continue
 
             stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
             stone_obj = Object(self.shaders[0], {
@@ -190,7 +181,7 @@ class Game:
             })
             stone_objs.append(stone_obj)
 
-        # Load textures for stones
+        # Load textures for planets
         for stone in stone_objs:
             if 'texture_path' in stone.properties and os.path.exists(stone.properties['texture_path']):
                 stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
@@ -202,7 +193,7 @@ class Game:
             chosen_stones = random.sample(non_sun_stones, 3)
             for s in chosen_stones:
                 key_verts, key_inds = CreateKeyIcon(
-                    radius=10,  # small radius for the key
+                    radius=10,  
                     color=[1.0, 1.0, 0.0]
                 )
                 key_obj = Object(self.shaders[0], {
@@ -223,7 +214,6 @@ class Game:
                 })
                 stone_objs.append(key_obj)
 
-        # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
         enemy_objs = []
         for i in range(3):
             enemy_verts, enemy_inds = CreateSpaceEnemy()
@@ -238,7 +228,7 @@ class Game:
                 'position': pos,
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),  
-                'speed': random.uniform(40, 90),  # Random speed
+                'speed': random.uniform(40, 90),  
                 'radius': enemy_radius,
                 # direction: random normalized direction
                 'direction': np.array([
@@ -294,7 +284,6 @@ class Game:
                 # If we can't find a valid spot, just skip or place at a default
                 continue
 
-            stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
             car_verts, car_inds = CreateSafariCar()
             stone_obj = Object(self.shaders[0], {
                 'name': 'stone',
@@ -312,7 +301,6 @@ class Game:
                 ], dtype=np.float32),
                 'carries_key': False,
                 'key_obj': None,
-                # 'texture_path': "assets/objects/elephant.jpg"
             })
             stone_objs.append(stone_obj)
 
@@ -327,7 +315,7 @@ class Game:
             chosen_stones = random.sample(stone_objs, 3)
             for s in chosen_stones:
                 key_verts, key_inds = CreateKeyIcon(
-                    radius=10,  # small radius for the key
+                    radius=10,  
                     color=[1.0, 1.0, 0.0]
                 )
                 key_obj = Object(self.shaders[0], {
@@ -361,8 +349,8 @@ class Game:
                 'indices': np.array(enemy_inds, dtype=np.uint32),
                 'position': pos,
                 'rotation_z': 0.0,
-                'scale': np.array([30, 30, 1], dtype=np.float32),  # Similar to player
-                'speed': random.uniform(40, 90),  # Random speed
+                'scale': np.array([30, 30, 1], dtype=np.float32), 
+                'speed': random.uniform(40, 90), 
                 'radius': enemy_radius,
                 # direction: random normalized direction
                 'direction': np.array([
@@ -427,11 +415,10 @@ class Game:
                 'scale': np.array([1, 1, 1], dtype=np.float32),
                 'speed': random.uniform(50, 120),
                 'radius': r,
-                # 'texture_path': "assets/objects/stone.jpg"
             })
             stone_objs.append(stone_obj)
 
-        # Load textures for stones
+        # Load textures for boats
         for stone in stone_objs:
             if 'texture_path' in stone.properties and os.path.exists(stone.properties['texture_path']):
                 stone.properties['texture_id'] = LoadTexture(stone.properties['texture_path'])
@@ -442,7 +429,7 @@ class Game:
             chosen_stones = random.sample(stone_objs, 3)
             for s in chosen_stones:
                 key_verts, key_inds = CreateKeyIcon(
-                    radius=10,  # small radius for the key
+                    radius=10, 
                     color=[1.0, 1.0, 0.0]
                 )
                 key_obj = Object(self.shaders[0], {
@@ -458,7 +445,6 @@ class Game:
                 })
                 stone_objs.append(key_obj)
 
-        # Enemies: reuse "CreatePlayer" geometry, then define each as an enemy
         enemy_objs = []
         for i in range(3):
             enemy_verts, enemy_inds = CreateBoat(color1=[0.2, 0.2, 0.2], color2=[0.8, 0.45, 0.5])
@@ -472,8 +458,8 @@ class Game:
                 'indices': np.array(enemy_inds, dtype=np.uint32),
                 'position': pos,
                 'rotation_z': 0.0,
-                'scale': np.array([1, 1, 1], dtype=np.float32),  # Similar to player
-                'speed': random.uniform(40, 90),  # Random speed
+                'scale': np.array([1, 1, 1], dtype=np.float32),  
+                'speed': random.uniform(40, 90), 
                 'radius': enemy_radius,
                 # direction: random normalized direction
                 'direction': np.array([
@@ -490,7 +476,6 @@ class Game:
         return objs
 
     def InitScreen(self):
-        # self.objects = self.maps[self.current_map]
         
         if self.screen == 0:
             self.current_map = 0
@@ -526,12 +511,10 @@ class Game:
             self.DrawText()
             self.UpdateScene(inputs, time)
             self.DrawScene()
-            # self.show_switch_map_button()
         if self.screen == 2:
             self.DrawText()
             self.UpdateScene(inputs, time)
             self.DrawScene()
-            # self.show_switch_map_button()
 
     def DrawText(self):
         if self.screen == 0:
@@ -544,7 +527,7 @@ class Game:
     def DrawHUD(self):
         # Position and size the HUD at the very top
         imgui.set_next_window_position(0, 0)
-        imgui.set_next_window_size(self.width, 30)  # 30 px in height, adjust as needed
+        imgui.set_next_window_size(self.width, 30)  
 
         # Begin a new ImGui window for the HUD
         imgui.begin("HUD", True,
@@ -569,7 +552,6 @@ class Game:
         imgui.same_line()
         imgui.text_unformatted(f"                Time: {int(self.total_time)}s")
 
-        # Draw heart icons for lives (using text hearts, but you could use textures if desired)
         imgui.same_line()
         hearts_str = f"                 Lives: {self.lives}"
         imgui.text_unformatted(hearts_str)
@@ -613,29 +595,10 @@ class Game:
                     if dist < (player_obj.properties['radius'] + obj.properties['radius']):
                         self.health -= 10 * delta  # Reduce health over time when in contact
 
-        # for obj in self.objects:
-        #     # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
-        #     if obj is not None and obj.properties['name'] == 'player':
-        #         if 'W' in inputs:
-        #             obj.properties['position'][1] += player_speed * delta
-        #         if 'S' in inputs:
-        #             obj.properties['position'][1] -= player_speed * delta
-        #         if 'A' in inputs:
-        #             obj.properties['position'][0] -= player_speed * delta
-        #         if 'D' in inputs:
-        #             obj.properties['position'][0] += player_speed * delta
-
-        #         # Clamp the player's position to avoid going out of screen bounds
-        #         x, y, z = obj.properties['position']
-        #         x = max(-470.0, min(470.0, x))
-        #         y = max(-450.0, min(440.0, y))
-        #         obj.properties['position'] = np.array([x, y, z], dtype=np.float32)
-
         if self.screen == 0:
 
             player_speed = 100.0
             for obj in self.objects:
-                # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
                 if obj is not None and obj.properties['name'] == 'player':
                     if 'W' in inputs:
                         obj.properties['position'][1] += player_speed * delta
@@ -714,7 +677,6 @@ class Game:
 
             # If on rock, move player along with rock
             if self.player_on_rock is not None and player_obj:
-                # The rock moves downward => replicate the same shift
                 rock = self.player_on_rock
                 player_obj.properties['position'] = rock.properties['position'].copy()
                 
@@ -746,10 +708,6 @@ class Game:
                     # Use last movement direction or a chosen direction
                     dx = 0.0
                     dy = 0.0
-                    # if 'W' in inputs: dy += 1.0
-                    # if 'S' in inputs: dy -= 1.0
-                    # if 'A' in inputs: dx -= 1.0
-                    # if 'D' in inputs: dx += 1.0
                     
                     # Use hold times to define direction
                     dy += self.keyHoldTimes['W']
@@ -794,7 +752,6 @@ class Game:
 
             player_speed = 100.0
             for obj in self.objects:
-                # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
                 if obj is not None and obj.properties['name'] == 'player':
                     if 'W' in inputs:
                         obj.properties['position'][1] += player_speed * delta
@@ -859,7 +816,6 @@ class Game:
 
             # If on rock, move player along with rock
             if self.player_on_rock is not None and player_obj:
-                # The rock moves downward => replicate the same shift
                 rock = self.player_on_rock
                 player_obj.properties['position'][1] -= rock.properties['speed'] * delta
                 
@@ -891,11 +847,7 @@ class Game:
                     # Use last movement direction or a chosen direction
                     dx = 0.0
                     dy = 0.0
-                    # if 'W' in inputs: dy += 1.0
-                    # if 'S' in inputs: dy -= 1.0
-                    # if 'A' in inputs: dx -= 1.0
-                    # if 'D' in inputs: dx += 1.0
-                    
+
                     # Use hold times to define direction
                     dy += self.keyHoldTimes['W']
                     dy -= self.keyHoldTimes['S']
@@ -939,7 +891,6 @@ class Game:
 
             player_speed = 40.0
             for obj in self.objects:
-                # Assuming 'player' can be identified by a property check or simply check if it has 'velocity'
                 if obj is not None and obj.properties['name'] == 'player':
                     if 'W' in inputs:
                         obj.properties['position'][1] += player_speed * delta
@@ -1050,10 +1001,6 @@ class Game:
                     # Use last movement direction or a chosen direction
                     dx = 0.0
                     dy = 0.0
-                    # if 'W' in inputs: dy += 1.0
-                    # if 'S' in inputs: dy -= 1.0
-                    # if 'A' in inputs: dx -= 1.0
-                    # if 'D' in inputs: dx += 1.0
                     
                     # Use hold times to define direction
                     dy += self.keyHoldTimes['W']
@@ -1109,8 +1056,6 @@ class Game:
         self.current_map += 1
         self.screen += 1
         if self.current_map >= len(self.maps) or self.screen >= len(self.maps):
-            # self.current_map = 0  # Loop back to the first map or handle game completion
-            # self.screen = 0
             self.is_game_won = True
         else:
             self.InitScreen()

@@ -100,7 +100,6 @@ class App:
         center_y = (window_height - button_height) / 2
 
         # Set window position to center of the screen
-        # imgui.set_window_pos((self.window.windowWidth - window_width) / 2, (self.window.windowHeight - window_height) / 2)
         imgui.set_window_size(400, 300)
 
         # Center the "NEW GAME" button
