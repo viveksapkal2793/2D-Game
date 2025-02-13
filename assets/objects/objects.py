@@ -581,6 +581,64 @@ def CreateBoat(base_width=80, top_width=40, height=60, color1=[0.7, 0.7, 0.7], c
 
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
+def CreateSafariCar(bonnet_width=30, car_width=60, height=40, wheel_radius=5, color1=[0.3, 0.4, 0.3], color2=[0.1, 0.6, 0.2], color3=[0.0, 0.0, 0.0], window_color=[0.7, 0.7, 0.7]):
+    """
+    Creates a safari car shape with a smaller rectangle for the bonnet, a larger rectangle for the car body,
+    two circles for the wheels, and two small squares for the windows.
+    """
+    half_bonnet_width = bonnet_width / 2
+    half_car_width = car_width / 2
+    half_height = height / 2
+
+    # Define vertices for the bonnet (left rectangle)
+    vertices = [
+        # Bonnet
+        -half_car_width - half_bonnet_width + 5, -half_height + 5, 0.0, color1[0], color1[1], color1[2], 0.0, 0.0,  # Bottom left
+        -half_car_width + half_bonnet_width, -half_height + 5, 0.0, color1[0], color1[1], color1[2], 1.0, 0.0,  # Bottom right
+        -half_car_width + half_bonnet_width, half_height - 5, 0.0, color1[0], color1[1], color1[2], 1.0, 1.0,   # Top right
+        -half_car_width - half_bonnet_width + 5, half_height - 5, 0.0, color1[0], color1[1], color1[2], 0.0, 1.0,   # Top left
+    ]
+
+    # Define vertices for the car body (right rectangle)
+    vertices += [
+        # Car body
+        -half_car_width + 15, -half_height, 0.0, color2[0], color2[1], color2[2], 0.0, 0.0,  # Bottom left
+        half_car_width + 5, -half_height, 0.0, color2[0], color2[1], color2[2], 1.0, 0.0,   # Bottom right
+        half_car_width + 5, half_height, 0.0, color2[0], color2[1], color2[2], 1.0, 1.0,    # Top right
+        -half_car_width + 15, half_height, 0.0, color2[0], color2[1], color2[2], 0.0, 1.0,   # Top left
+    ]
+
+    # Define indices for the bonnet and car body
+    indices = [
+        0, 1, 2, 0, 2, 3,  # Bonnet
+        4, 5, 6, 4, 6, 7   # Car body
+    ]
+
+
+    # Define vertices for the windows (small squares)
+    window_size = 5
+    window_verts1 = [
+        -half_car_width + 25, -15, 0.2, window_color[0], window_color[1], window_color[2], 0.0, 0.0,  # Bottom left
+        -half_car_width + 50, -15, 0.2, window_color[0], window_color[1], window_color[2], 1.0, 0.0,  # Bottom right
+        -half_car_width + 50, 15, 0.2, window_color[0], window_color[1], window_color[2], 1.0, 1.0,   # Top right
+        -half_car_width + 25, 15, 0.2, window_color[0], window_color[1], window_color[2], 0.0, 1.0,   # Top left
+    ]
+    window_inds1 = [len(vertices) // 8, len(vertices) // 8 + 1, len(vertices) // 8 + 2, len(vertices) // 8, len(vertices) // 8 + 2, len(vertices) // 8 + 3]
+    vertices += window_verts1
+    indices += window_inds1
+
+    # window_verts2 = [
+    #     0, 0, 0.2, window_color[0], window_color[1], window_color[2], 0.0, 0.0,  # Bottom left
+    #     5, 0, 0.2, window_color[0], window_color[1], window_color[2], 1.0, 0.0,  # Bottom right
+    #     5, 5, 0.2, window_color[0], window_color[1], window_color[2], 1.0, 1.0,   # Top right
+    #     0, 5, 0.2, window_color[0], window_color[1], window_color[2], 0.0, 1.0,   # Top left
+    # ]
+    # window_inds2 = [len(vertices) // 8, len(vertices) // 8 + 1, len(vertices) // 8 + 2, len(vertices) // 8, len(vertices) // 8 + 2, len(vertices) // 8 + 3]
+    # vertices += window_verts2
+    # indices += window_inds2
+
+    return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
+
 def CreateHeartIcon(radius=8, color=[1.0, 0.0, 0.0]):
     """
     Creates a simple heart shape using two circles plus a triangle-like shape.

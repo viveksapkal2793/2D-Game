@@ -4,7 +4,7 @@ import random
 import os
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, CreateStone, CreateKeyIcon, CreateJungleEnemy, CreateSpaceEnemy, CreatebeachEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, beachBankProps, beachWaterProps, CreateBoat
+from assets.objects.objects import playerProps, CreateStone, CreateKeyIcon, CreateJungleEnemy, CreateSpaceEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, beachBankProps, beachWaterProps, CreateBoat, CreateSafariCar
 
 def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -280,10 +280,11 @@ class Game:
                 continue
 
             stone_verts, stone_inds = CreateStone(radius=r, color=[0.7, 0.7, 0.7])
+            car_verts, car_inds = CreateSafariCar()
             stone_obj = Object(self.shaders[0], {
                 'name': 'stone',
-                'vertices': np.array(stone_verts, dtype=np.float32),
-                'indices': np.array(stone_inds, dtype=np.uint32),
+                'vertices': car_verts,
+                'indices': car_inds,
                 'position': pos,
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),
@@ -296,7 +297,7 @@ class Game:
                 ], dtype=np.float32),
                 'carries_key': False,
                 'key_obj': None,
-                'texture_path': "assets/objects/elephant.jpg"
+                # 'texture_path': "assets/objects/elephant.jpg"
             })
             stone_objs.append(stone_obj)
 
