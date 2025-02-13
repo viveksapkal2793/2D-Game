@@ -65,7 +65,7 @@ The save_game.json file should be present for saving and loading game progress.
 ```
 cd /path/to/2D-Game
 ```
-Replace /path/to/ with your respective path
+Replace /path/to/2D-Game with your respective path
 
 2. Run the game:
 ```
