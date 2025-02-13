@@ -1,7 +1,5 @@
 import glfw
 from OpenGL.GL import *
-import imgui
-from imgui.integrations.glfw import GlfwRenderer
 
 class Window:
     def __init__(self, height, width):
