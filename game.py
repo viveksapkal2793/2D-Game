@@ -90,7 +90,7 @@ class Game:
             'D': 0.0
         }
 
-    def CreateDoorObject(self, name: str, position: np.ndarray, radius: float=40.0):
+    def CreateDoorObject(self, name: str, position: np.ndarray, radius: float=40.0, texture_path: str=None):
         """Creates a simple rectangular or circular 'door' object."""
         # If you have a custom function to create geometry, use it here
         # For simplicity, let's re-use a circle from CreateStone
@@ -105,7 +105,8 @@ class Game:
             'scale': np.array([1, 1, 1], dtype=np.float32),
             'speed': 0.0,               # Doors are stationary
             'radius': radius,           # For distance checks
-            'attached_to_player': False # Not used, but included for consistency
+            'attached_to_player': False, # Not used, but included for consistency
+            'texture_path': texture_path
         })
 
     def create_space_map(self):
@@ -126,10 +127,17 @@ class Game:
         stone_objs = []
 
         # Add bottom-left entry "door"
-        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30)
+        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30, texture_path="assets/objects/entry_door.jpg")
+        if 'texture_path' in entry_door.properties and os.path.exists(entry_door.properties['texture_path']):
+            entry_door.properties['texture_id'] = LoadTexture(entry_door.properties['texture_path'])
+            del entry_door.properties['texture_path']
         objs.append(entry_door)
+        
         # Add top-right exit "door"
-        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
+        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40, texture_path="assets/objects/exit_door.jpg")
+        if 'texture_path' in exit_door.properties and os.path.exists(exit_door.properties['texture_path']):
+            exit_door.properties['texture_id'] = LoadTexture(exit_door.properties['texture_path'])
+            del exit_door.properties['texture_path']
         objs.append(exit_door)
 
         # Create the sun stone
@@ -265,10 +273,17 @@ class Game:
         stone_objs = []
 
         # Add bottom-left entry "door"
-        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30)
+        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30, texture_path="assets/objects/entry_door.jpg")
+        if 'texture_path' in entry_door.properties and os.path.exists(entry_door.properties['texture_path']):
+            entry_door.properties['texture_id'] = LoadTexture(entry_door.properties['texture_path'])
+            del entry_door.properties['texture_path']
         objs.append(entry_door)
+        
         # Add top-right exit "door"
-        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
+        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40, texture_path="assets/objects/exit_door.jpg")
+        if 'texture_path' in exit_door.properties and os.path.exists(exit_door.properties['texture_path']):
+            exit_door.properties['texture_id'] = LoadTexture(exit_door.properties['texture_path'])
+            del exit_door.properties['texture_path']
         objs.append(exit_door)
 
         # Add random non-overlapping stones
@@ -381,10 +396,17 @@ class Game:
         stone_objs = []
 
         # Add bottom-left entry "door"
-        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30)
+        entry_door = self.CreateDoorObject('entry_door', np.array([-450, -450, 0], dtype=np.float32), radius=30, texture_path="assets/objects/entry_door.jpg")
+        if 'texture_path' in entry_door.properties and os.path.exists(entry_door.properties['texture_path']):
+            entry_door.properties['texture_id'] = LoadTexture(entry_door.properties['texture_path'])
+            del entry_door.properties['texture_path']
         objs.append(entry_door)
+        
         # Add top-right exit "door"
-        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40)
+        exit_door = self.CreateDoorObject('exit_door', np.array([450, 450, 0], dtype=np.float32), radius=40, texture_path="assets/objects/exit_door.jpg")
+        if 'texture_path' in exit_door.properties and os.path.exists(exit_door.properties['texture_path']):
+            exit_door.properties['texture_id'] = LoadTexture(exit_door.properties['texture_path'])
+            del exit_door.properties['texture_path']
         objs.append(exit_door)
 
         # Add random non-overlapping stones
