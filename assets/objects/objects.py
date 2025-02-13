@@ -127,7 +127,7 @@ def CreateJungleEnemy():
 
     return vertices, indices
 
-def CreateRiverEnemy():
+def CreatebeachEnemy():
 
     vertices, indices = CreateCircle([0.0, 0.0, 0.0], 1.0, [180/255, 224/255, 150/255], 50, 0)
 
@@ -223,7 +223,7 @@ backgroundProps = {
 
     'boundary' : [500.0, -500.0, 500.0, 500.0],
 
-    'river_banks': [-400.0, 400.0]
+    'beach_banks': [-400.0, 400.0]
 }
 
 # =========================
@@ -412,10 +412,10 @@ def LoadTexture(file_path):
     return tex_id
 
 
-def CreateRiverBiome():
+def CreatebeachBiome():
     landColour = [0,1,0]
-    riverColour = [0,0,1]
-    # Define vertices and indices for river biome
+    beachColour = [0,0,1]
+    # Define vertices and indices for beach biome
     vertices = [
         # Define vertices for water, rocks, etc.
         500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
@@ -428,10 +428,10 @@ def CreateRiverBiome():
         -500.0, -400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
         -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
 
-        500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 1.0,
-        500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 0.0,
-        -500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 0.0,
-        -500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 1.0,
+        500.0, 400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 0.0, 1.0,
     ]
     indices = [
         # Define indices for water, rocks, etc.
@@ -441,15 +441,15 @@ def CreateRiverBiome():
     ]
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
-def CreateRiverWater():
-    riverColour = [0,0,1]
-    # Define vertices and indices for river water
+def CreatebeachWater():
+    beachColour = [0,0,1]
+    # Define vertices and indices for beach water
     vertices = [
         # Define vertices for water
-        500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 1.0,
-        500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 1.0, 0.0,
-        -500.0, -400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 0.0,
-        -500.0, 400.0, -0.9, riverColour[0], riverColour[1], riverColour[2], 0.0, 1.0,
+        500.0, 400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 1.0, 1.0,
+        500.0, -400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 1.0, 0.0,
+        -500.0, -400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 0.0, 0.0,
+        -500.0, 400.0, -0.9, beachColour[0], beachColour[1], beachColour[2], 0.0, 1.0,
     ]
     indices = [
         # Define indices for water
@@ -457,11 +457,11 @@ def CreateRiverWater():
     ]
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
-def CreateRiverBanks():
+def CreatebeachBanks():
     landColour = [0,1,0]
-    # Define vertices and indices for river banks
+    # Define vertices and indices for beach banks
     vertices = [
-        # Define vertices for river banks
+        # Define vertices for beach banks
         500.0, 500.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 1.0,
         500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 1.0, 0.0,
         -500.0, 400.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 0.0,
@@ -473,28 +473,28 @@ def CreateRiverBanks():
         -500.0, -500.0, -0.9, landColour[0], landColour[1], landColour[2], 0.0, 1.0,
     ]
     indices = [
-        # Define indices for river banks
+        # Define indices for beach banks
         0,1,2, 0,3,2,
         4,5,6, 4,7,6
     ]
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
-riverbankverts, riverbankinds = CreateRiverBanks()
-riverBankProps = {  
-    'name': 'river_banks',
-    'vertices': riverbankverts,
-    'indices': riverbankinds,
+beachbankverts, beachbankinds = CreatebeachBanks()
+beachBankProps = {  
+    'name': 'beach_banks',
+    'vertices': beachbankverts,
+    'indices': beachbankinds,
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
     'scale': np.array([1, 1, 1], dtype=np.float32),
     'texture_path': "assets/objects/beach.jpeg"
 }
 
-riverwaterverts, riverwaterinds = CreateRiverWater()
-riverWaterProps = {
-    'name': 'river_water',
-    'vertices': riverwaterverts,
-    'indices': riverwaterinds,
+beachwaterverts, beachwaterinds = CreatebeachWater()
+beachWaterProps = {
+    'name': 'beach_water',
+    'vertices': beachwaterverts,
+    'indices': beachwaterinds,
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
     'scale': np.array([1, 1, 1], dtype=np.float32),
@@ -613,11 +613,11 @@ jungleProps = {
     'texture_path': "assets/objects/grass.jpg" 
 }
 
-riverVerts, riverInds = CreateRiverBiome()
-riverProps = {
-    'name': 'rivermap',
-    'vertices': np.array(riverVerts, dtype=np.float32),
-    'indices': np.array(riverInds, dtype=np.uint32),
+beachVerts, beachInds = CreatebeachBiome()
+beachProps = {
+    'name': 'beachmap',
+    'vertices': np.array(beachVerts, dtype=np.float32),
+    'indices': np.array(beachInds, dtype=np.uint32),
     'position': np.array([0, 0, 0], dtype=np.float32),
     'rotation_z': 0.0,
     'scale': np.array([1, 1, 1], dtype=np.float32),

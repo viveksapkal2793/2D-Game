@@ -4,7 +4,7 @@ import random
 import os
 from utils.graphics import Object, Camera, Shader
 from assets.shaders.shaders import object_shader
-from assets.objects.objects import playerProps, CreateStone, CreateKeyIcon, CreateJungleEnemy, CreateSpaceEnemy, CreateRiverEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, riverBankProps, riverWaterProps, CreateBoat
+from assets.objects.objects import playerProps, CreateStone, CreateKeyIcon, CreateJungleEnemy, CreateSpaceEnemy, CreatebeachEnemy, jungleCliffsProps, jungleGrassProps, LoadTexture, spaceMiddleProps, spaceCliffsProps, beachBankProps, beachWaterProps, CreateBoat
 
 def random_nonoverlapping_position(existing_objs, new_radius, i, number_of_stones=8, max_attempts=1000):
     """Try up to max_attempts to find a position that doesn't overlap existing stones."""
@@ -71,7 +71,7 @@ class Game:
         self.camera = Camera(height, width)
         self.shaders = [Shader(object_shader['vertex_shader'], object_shader['fragment_shader'])]
         self.objects = []
-        self.maps = [self.create_jungle_map(), self.create_river_map(), self.create_space_map()]
+        self.maps = [self.create_jungle_map(), self.create_beach_map(), self.create_space_map()]
         self.current_map = 0
         # self.player = Object(self.shaders[0], playerProps)
         self.player_on_rock = None
@@ -362,21 +362,21 @@ class Game:
 
         return objs
 
-    def create_river_map(self):
+    def create_beach_map(self):
 
-        if 'texture_path' in riverBankProps and os.path.exists(riverBankProps['texture_path']):
-            riverBankProps['texture_id'] = LoadTexture(riverBankProps['texture_path'])
-            del riverBankProps['texture_path']
-        riverBank = Object(self.shaders[0], riverBankProps)
+        if 'texture_path' in beachBankProps and os.path.exists(beachBankProps['texture_path']):
+            beachBankProps['texture_id'] = LoadTexture(beachBankProps['texture_path'])
+            del beachBankProps['texture_path']
+        beachBank = Object(self.shaders[0], beachBankProps)
 
-        if 'texture_path' in riverWaterProps and os.path.exists(riverWaterProps['texture_path']):
-            riverWaterProps['texture_id'] = LoadTexture(riverWaterProps['texture_path'])
-            del riverWaterProps['texture_path']
-        riverWater = Object(self.shaders[0], riverWaterProps)
+        if 'texture_path' in beachWaterProps and os.path.exists(beachWaterProps['texture_path']):
+            beachWaterProps['texture_id'] = LoadTexture(beachWaterProps['texture_path'])
+            del beachWaterProps['texture_path']
+        beachWater = Object(self.shaders[0], beachWaterProps)
 
         player = Object(self.shaders[0], playerProps)
         player.properties['position'] = np.array([-420, -450, 0], dtype=np.float32)
-        objs =  [riverBank, riverWater, player]
+        objs =  [beachBank, beachWater, player]
         stone_objs = []
 
         # Add bottom-left entry "door"
@@ -394,11 +394,11 @@ class Game:
                 # If we can't find a valid spot, just skip or place at a default
                 continue
 
-            riverBoatVerts, riverBoatInds = CreateBoat(color1=[0.8, 0.8, 0.9], color2=[0.2, 0.7, 0.4])
+            beachBoatVerts, beachBoatInds = CreateBoat(color1=[0.8, 0.8, 0.9], color2=[0.2, 0.7, 0.4])
             stone_obj = Object(self.shaders[0], {
                 'name': 'stone',
-                'vertices': riverBoatVerts,
-                'indices': riverBoatInds,
+                'vertices': beachBoatVerts,
+                'indices': beachBoatInds,
                 'position': pos,
                 'rotation_z': 0.0,
                 'scale': np.array([1, 1, 1], dtype=np.float32),
